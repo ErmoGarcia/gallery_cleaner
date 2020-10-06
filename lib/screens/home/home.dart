@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mediagallerycleaner/screens/home/cleaner.dart';
 import 'package:mediagallerycleaner/screens/trash/trash.dart';
 
+// Loads when the app is opened
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -9,7 +10,11 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.grey[850],
       body: Stack(
         children: <Widget>[
+
+          // The media swiper
           CleanerWidget(),
+
+          // Settings button
           Align(
             alignment: Alignment.topRight,
             child: SafeArea(
@@ -24,6 +29,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // Done button
           Align(
             alignment: Alignment.bottomLeft,
             child: SafeArea(
@@ -38,6 +45,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // Trash button
           Align(
             alignment: Alignment.bottomRight,
             child: SafeArea(

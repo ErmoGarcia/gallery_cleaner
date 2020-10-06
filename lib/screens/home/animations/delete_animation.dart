@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class DeleteAnimation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Animation that fires when an element is deleted
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,

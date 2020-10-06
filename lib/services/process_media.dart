@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class MediaProcessor {
 
+  // Properly displays an image
   Widget _generateImageWidget(image, fit) {
     return Image.memory(
       image,
@@ -15,6 +16,7 @@ class MediaProcessor {
     );
   }
 
+  // Properly displays a video
   Widget _generateVideoWidget(image, fit) {
     return Stack(
       alignment: Alignment.bottomRight,
@@ -25,6 +27,8 @@ class MediaProcessor {
           height: fit == null ? null : double.infinity,
           width: fit == null ? null : double.infinity,
         ),
+
+        // Video icon
         Padding(
           padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
           child: Icon(Icons.videocam, color: Colors.white,),
@@ -33,6 +37,7 @@ class MediaProcessor {
     );
   }
 
+  // Decides if the asset is an image or a video
   getMediaFromAsset(asset, image, [fit]) {
     if(asset.type == AssetType.image){
       return _generateImageWidget(image, fit);

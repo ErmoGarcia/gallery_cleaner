@@ -22,9 +22,12 @@ class _CleanerWidgetState extends State<CleanerWidget> {
   var _mediaList;
   bool _loading = true;
 
+  // Gets the media from the gallery (except deleted)
   _loadImages() async {
 //    var list = List<Uint8List>.from(await MediaProcessor().getMediaList());
     var list = await GalleryAccess().getMediaFromGallery();
+
+    // Saves the media list and stops the loading animation
     setState(() {
       _loading = false;
       _mediaList = list;
@@ -40,10 +43,12 @@ class _CleanerWidgetState extends State<CleanerWidget> {
   @override
   Widget build(BuildContext context) {
 
+    // Loading animation
     if(_loading) {
       return Loading();
     }
 
+    // Displays a message if there is no media
     if(_mediaList.isEmpty) {
       return Center(
         child: Text(
@@ -56,6 +61,7 @@ class _CleanerWidgetState extends State<CleanerWidget> {
       );
     }
 
+    // Displays the media swiper
     return PageView.builder(
       controller: _controller,
       itemCount: _mediaList.length,
@@ -63,9 +69,13 @@ class _CleanerWidgetState extends State<CleanerWidget> {
         return Center(
           child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.0),
+
+              // Loads the media thumbnails when it gets them
               child: FutureBuilder(
                 future: _mediaList[index].thumbDataWithSize(300, 300),
                 builder: (context, snapshot) {
+
+                  // Tries to retrieve the media thumbnails from phone gallery
                   if(snapshot.connectionState == ConnectionState.done) {
                     var image = _processor.getMediaFromAsset(
                         _mediaList[index], snapshot.data
@@ -74,10 +84,13 @@ class _CleanerWidgetState extends State<CleanerWidget> {
                         _mediaList[index], snapshot.data, BoxFit.contain
                     );
 
+                    // Media thumbnail
                     return Dismissible(
                       resizeDuration: null,
                       background: DeleteAnimation(),
                       secondaryBackground: CloudAnimation(),
+
+                      // On tap: load preview
                       child: GestureDetector(
                         child: image,
                         onTap: (){
@@ -93,8 +106,11 @@ class _CleanerWidgetState extends State<CleanerWidget> {
                       ),
                       key: ValueKey(_mediaList[index]),
                       direction: DismissDirection.vertical,
+
+                      // On swipe vertical:
                       onDismissed: (direction) async {
 
+                        // If swiped up: send to cloud
 //                         if(direction == DismissDirection.up) {
 //                           Deleted image = Deleted();
 //                           image.img_id = _mediaList[index].id;
@@ -104,6 +120,7 @@ class _CleanerWidgetState extends State<CleanerWidget> {
 //                           await image.save();
 //                         }
 
+                        // If swiped down: delete
                         if(direction == DismissDirection.down) {
                           Deleted image = Deleted();
                           image.img_id = _mediaList[index].id;
@@ -113,6 +130,7 @@ class _CleanerWidgetState extends State<CleanerWidget> {
                           await image.save();
                         }
 
+                        // Remove from swiper
                         setState(() => _mediaList.removeAt(index));
                       },
                     );

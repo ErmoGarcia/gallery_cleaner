@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 part 'model.g.dart';
 
+// DB table for deleted images
 const tableDeleted = SqfEntityTable(
   tableName: 'deleted',
   primaryKeyName: 'id',

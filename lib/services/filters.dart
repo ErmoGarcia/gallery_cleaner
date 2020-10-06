@@ -4,6 +4,9 @@ class Filter {
 
   final deleted = Deleted();
 
+  // Filters out the deleted media:
+  // gets a list of assets and returns it without the deleted ones
+  // it has to make call to the database
   filterDeleted(assetList) async {
     var deletedList = await deleted.select().toList();
     var idList = deletedList.map((img) => img.img_id);

@@ -12,6 +12,7 @@ class Trash extends StatefulWidget {
   _TrashState createState() => _TrashState();
 }
 
+// Shows the media that has been marked for deletion
 class _TrashState extends State<Trash> {
 
   final _deleted = Deleted();
@@ -22,6 +23,7 @@ class _TrashState extends State<Trash> {
 
 //  var _selected = [];
 
+  // Gets the media marked as deleted from the DB
   _getDeletedMedia() async {
     List<Deleted> deletedList = await _deleted.select().toList();
     List<AssetEntity> list = await Future.wait(
@@ -30,12 +32,14 @@ class _TrashState extends State<Trash> {
         }).toList()
     );
 
+    // Saves the media list and stops the loading animation
     setState(() {
       _mediaList = list;
       _loading = false;
     });
   }
 
+  // Deletes the media from the phone gallery
   _emptyTrash() async {
     GalleryAccess().deleteMediaFromGallery(_mediaList);
     await _deleted.select().delete();
@@ -50,10 +54,13 @@ class _TrashState extends State<Trash> {
 
   @override
   Widget build(BuildContext context) {
+
+    // Loading animation
     if(_loading) {
       return Loading();
     }
 
+    // Displays a message if there is no media
     if(_mediaList == null) {
       return Scaffold(
         backgroundColor: Colors.grey[850],
@@ -69,14 +76,21 @@ class _TrashState extends State<Trash> {
       );
     }
 
+    // Displays the media grid
     return Scaffold(
       backgroundColor: Colors.grey[850],
+
+      // Bar containing the title and "empty" button
       appBar: AppBar(
         centerTitle: true,
         title: Text('Deleted Media'),
         backgroundColor: Colors.purpleAccent,
         actions: <Widget>[
+
+          // Empty button
           Icon(Icons.delete, color: Colors.white,),
+
+          // On tap: empties the trash and deletes the media from the phone
           GestureDetector(
             onTap: () async {
               if(_mediaList != null) {
@@ -87,6 +101,8 @@ class _TrashState extends State<Trash> {
                 });
               }
             },
+
+            // Displays message after trash has been emptied
             child: Container(
               alignment: Alignment.center,
               padding: EdgeInsets.fromLTRB(5.0, 0, 20.0, 0),
@@ -103,10 +119,13 @@ class _TrashState extends State<Trash> {
       ),
 
 
+      // Grid containing the media
       body: GridView.builder(
         itemCount: _mediaList.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemBuilder: (context, index) {
+
+          // When an item is selected: change the color of the borders
           var color;
 //          if(_selected != null && _selected.contains(index)) {
 //            color = Colors.indigoAccent;
@@ -114,14 +133,19 @@ class _TrashState extends State<Trash> {
 //            color = Colors.grey[850];
 //          }
 
+          // Media item
           return Container(
             padding: const EdgeInsets.all(3.0),
             decoration: BoxDecoration(
               color: color,
             ),
+
+            // Shows the media thumbnails when it gets them
             child: FutureBuilder(
               future: _mediaList[index].thumbDataWithSize(200, 200),
               builder: (context, snapshot) {
+
+                // Tries to retrieve the media thumbnails from phone gallery
                 if (snapshot.connectionState == ConnectionState.done) {
                   var image = _processor.getMediaFromAsset(
                       _mediaList[index], snapshot.data, BoxFit.cover
@@ -131,6 +155,7 @@ class _TrashState extends State<Trash> {
                   );
 
                   return GestureDetector(
+                    // On long press: media asset is selected
                     onLongPress: () {
                       // For recovering media
 
@@ -138,6 +163,8 @@ class _TrashState extends State<Trash> {
 //                        _selected.add(index);
 //                      });
                     },
+
+                    // On tap: load media preview
                     onTap: (){
                       Navigator.push(
                         context,

@@ -8,6 +8,7 @@ class ImagePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Preview that is shown when an image is tapped on
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
