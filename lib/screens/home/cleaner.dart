@@ -122,8 +122,11 @@ class _CleanerWidgetState extends State<CleanerWidget> {
 
                         // If swiped down: delete
                         if(direction == DismissDirection.down) {
+                          String path = _mediaList[index].relativePath + _mediaList[index].title;
+                          print('Path: ${path}');
                           Deleted image = Deleted();
                           image.img_id = _mediaList[index].id;
+                          image.path = path;
                           image.date = _mediaList[index].createDateTime;
                           image.cloud = false;
 

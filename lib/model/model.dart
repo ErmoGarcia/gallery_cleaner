@@ -14,6 +14,7 @@ const tableDeleted = SqfEntityTable(
   useSoftDeleting: false,
   fields: [
     SqfEntityField('img_id', DbType.text),
+    SqfEntityField('path', DbType.text),
     SqfEntityField('cloud', DbType.bool),
     SqfEntityField('date', DbType.datetime),
   ]

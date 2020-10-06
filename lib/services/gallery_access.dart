@@ -15,6 +15,7 @@ class GalleryAccess {
     if (result) {
       // success: gets all of the assets
       List<AssetPathEntity> assetPathsList = await PhotoManager.getAssetPathList(onlyAll: true);
+      print('AssetPath: ${assetPathsList}');
       List<AssetEntity> assetList = await assetPathsList[0].getAssetListRange(start: 0, end: assetPathsList[0].assetCount);
 
       // returns all except for the deleted ones
@@ -35,7 +36,11 @@ class GalleryAccess {
 //    List<AssetPathEntity> assetPathList = await PhotoManager.getAssetPathList(onlyAll: true);
 //    await assetPathList[0].refreshPathProperties();
     await assetList.forEach((asset) async {
+//      String title = asset.title;
+//      print('Title: ${title}');
+//      print('Asset: ${asset}');
       File file = await asset.file;
+//      print('Path: ${file.path}');
       await file.delete();
       imageCache.clear();
     });
