@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mediagallerycleaner/services/filters.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_ex/path_provider_ex.dart';
 
 class GalleryAccess {
 
@@ -15,7 +17,6 @@ class GalleryAccess {
     if (result) {
       // success: gets all of the assets
       List<AssetPathEntity> assetPathsList = await PhotoManager.getAssetPathList(onlyAll: true);
-      print('AssetPath: ${assetPathsList}');
       List<AssetEntity> assetList = await assetPathsList[0].getAssetListRange(start: 0, end: assetPathsList[0].assetCount);
 
       // returns all except for the deleted ones
@@ -30,19 +31,36 @@ class GalleryAccess {
   // PROBLEM: not really getting deleted from gallery
   // Deletes the assets from the phone gallery
   deleteMediaFromGallery(assetList) async {
-//    List<String> idList = assetList.map<String>((
-//        AssetEntity element) => element.id.toString()).toList();
-//    await PhotoManager.editor.deleteWithIds(idList);
-//    List<AssetPathEntity> assetPathList = await PhotoManager.getAssetPathList(onlyAll: true);
-//    await assetPathList[0].refreshPathProperties();
-    await assetList.forEach((asset) async {
-//      String title = asset.title;
-//      print('Title: ${title}');
-//      print('Asset: ${asset}');
-      File file = await asset.file;
-//      print('Path: ${file.path}');
-      await file.delete();
-      imageCache.clear();
+    var storageInfo = await PathProviderEx.getStorageInfo();
+    var root = storageInfo[0].rootDir;
+    print('Root: ${root}');
+
+    await assetList.forEach((path) async {
+      try {
+        var file = await File(root + '/' + path);
+        var test = await file.exists();
+        print('Test: ${test}');
+        await file.delete();
+        _deleteCacheDir();
+
+      } catch (e) {
+        print('Error ${e}');
+      }
     });
+
+//    await assetList.forEach((asset) async {
+//      File file = await asset.file;
+//      await file.delete();
+//      imageCache.clear();
+//    });
+  }
+
+
+  _deleteCacheDir() async {
+    final cacheDir = await getTemporaryDirectory();
+
+    if (cacheDir.existsSync()) {
+      cacheDir.deleteSync(recursive: true);
+    }
   }
 }

@@ -19,6 +19,7 @@ class _TrashState extends State<Trash> {
   final _processor = MediaProcessor();
 
   var _mediaList;
+  var _pathList;
   bool _loading = true;
 
 //  var _selected = [];
@@ -26,6 +27,7 @@ class _TrashState extends State<Trash> {
   // Gets the media marked as deleted from the DB
   _getDeletedMedia() async {
     List<Deleted> deletedList = await _deleted.select().toList();
+    List<String> paths = deletedList.map((element) => element.path).toList();
     List<AssetEntity> list = await Future.wait(
         deletedList.map((element) async {
           return await AssetEntity.fromId(element.img_id);
@@ -34,6 +36,7 @@ class _TrashState extends State<Trash> {
 
     // Saves the media list and stops the loading animation
     setState(() {
+      _pathList = paths;
       _mediaList = list;
       _loading = false;
     });
@@ -41,7 +44,7 @@ class _TrashState extends State<Trash> {
 
   // Deletes the media from the phone gallery
   _emptyTrash() async {
-    GalleryAccess().deleteMediaFromGallery(_mediaList);
+    GalleryAccess().deleteMediaFromGallery(_pathList);
     await _deleted.select().delete();
     setState(() => _loading = false);
   }

@@ -33,6 +33,7 @@ class TableDeleted extends SqfEntityTableBase {
     // declare fields
     fields = [
       SqfEntityFieldBase('img_id', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('path', DbType.text, isNotNull: false),
       SqfEntityFieldBase('cloud', DbType.bool, isNotNull: false),
       SqfEntityFieldBase('date', DbType.datetime,
           isNotNull: false, minValue: DateTime.parse('1900-01-01')),
@@ -70,13 +71,13 @@ class MyDbModel extends SqfEntityModelProvider {
 // BEGIN ENTITIES
 // region Deleted
 class Deleted {
-  Deleted({this.id, this.img_id, this.cloud, this.date}) {
+  Deleted({this.id, this.img_id, this.path, this.cloud, this.date}) {
     _setDefaultValues();
   }
-  Deleted.withFields(this.id, this.img_id, this.cloud, this.date) {
+  Deleted.withFields(this.id, this.img_id, this.path, this.cloud, this.date) {
     _setDefaultValues();
   }
-  Deleted.withId(this.id, this.img_id, this.cloud, this.date) {
+  Deleted.withId(this.id, this.img_id, this.path, this.cloud, this.date) {
     _setDefaultValues();
   }
   Deleted.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
@@ -86,6 +87,9 @@ class Deleted {
     id = int.tryParse(o['id'].toString());
     if (o['img_id'] != null) {
       img_id = o['img_id'] as String;
+    }
+    if (o['path'] != null) {
+      path = o['path'] as String;
     }
     if (o['cloud'] != null) {
       cloud = o['cloud'] == 1 || o['cloud'] == true;
@@ -102,6 +106,7 @@ class Deleted {
   // FIELDS (Deleted)
   int id;
   String img_id;
+  String path;
   bool cloud;
   DateTime date;
   bool isSaved;
@@ -124,6 +129,10 @@ class Deleted {
     }
     if (img_id != null) {
       map['img_id'] = img_id;
+    }
+
+    if (path != null) {
+      map['path'] = path;
     }
 
     if (cloud != null) {
@@ -149,6 +158,10 @@ class Deleted {
     }
     if (img_id != null) {
       map['img_id'] = img_id;
+    }
+
+    if (path != null) {
+      map['path'] = path;
     }
 
     if (cloud != null) {
@@ -178,6 +191,7 @@ class Deleted {
     return [
       id,
       img_id,
+      path,
       cloud,
       date != null ? date.millisecondsSinceEpoch : null
     ];
@@ -187,6 +201,7 @@ class Deleted {
     return [
       id,
       img_id,
+      path,
       cloud,
       date != null ? date.millisecondsSinceEpoch : null
     ];
@@ -288,7 +303,7 @@ class Deleted {
   ///
   /// Returns a <List<BoolResult>>
   Future<List<dynamic>> saveAll(List<Deleted> deleteds) async {
-    // final results = _mnDeleted.saveAll('INSERT OR REPLACE INTO deleted (id,img_id, cloud, date)  VALUES (?,?,?,?)',deleteds);
+    // final results = _mnDeleted.saveAll('INSERT OR REPLACE INTO deleted (id,img_id, path, cloud, date)  VALUES (?,?,?,?,?)',deleteds);
     // return results; removed in sqfentity_gen 1.3.0+6
     MyDbModel().batchStart();
     for (final obj in deleteds) {
@@ -303,10 +318,11 @@ class Deleted {
   Future<int> upsert() async {
     try {
       if (await _mnDeleted.rawInsert(
-              'INSERT OR REPLACE INTO deleted (id,img_id, cloud, date)  VALUES (?,?,?,?)',
+              'INSERT OR REPLACE INTO deleted (id,img_id, path, cloud, date)  VALUES (?,?,?,?,?)',
               [
                 id,
                 img_id,
+                path,
                 cloud,
                 date != null ? date.millisecondsSinceEpoch : null
               ]) ==
@@ -334,7 +350,7 @@ class Deleted {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Deleted> deleteds) async {
     final results = await _mnDeleted.rawInsertAll(
-        'INSERT OR REPLACE INTO deleted (id,img_id, cloud, date)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO deleted (id,img_id, path, cloud, date)  VALUES (?,?,?,?,?)',
         deleteds);
     return results;
   }
@@ -767,6 +783,11 @@ class DeletedFilterBuilder extends SearchCriteria {
     return _img_id = setField(_img_id, 'img_id', DbType.text);
   }
 
+  DeletedField _path;
+  DeletedField get path {
+    return _path = setField(_path, 'path', DbType.text);
+  }
+
   DeletedField _cloud;
   DeletedField get cloud {
     return _cloud = setField(_cloud, 'cloud', DbType.bool);
@@ -1055,6 +1076,11 @@ class DeletedFields {
   static TableField get img_id {
     return _fImg_id =
         _fImg_id ?? SqlSyntax.setField(_fImg_id, 'img_id', DbType.text);
+  }
+
+  static TableField _fPath;
+  static TableField get path {
+    return _fPath = _fPath ?? SqlSyntax.setField(_fPath, 'path', DbType.text);
   }
 
   static TableField _fCloud;

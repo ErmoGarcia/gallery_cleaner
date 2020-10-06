@@ -31,6 +31,8 @@ dependencies:
   flutter_spinkit: "^4.1.2"
   sqfentity: ^1.2.3
   sqfentity_gen: ^1.2.3
+  path_provider: ^1.6.18
+  path_provider_ex: ^1.0.1
 
 dev_dependencies:
   flutter_test:
