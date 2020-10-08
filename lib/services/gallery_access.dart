@@ -5,48 +5,62 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
 
-class GalleryAccess {
+class GalleryAccess extends ChangeNotifier {
 
   final filter = Filter();
 
+  AssetPathEntity assetPath;
+  List<AssetEntity> list = [];
+
   // Gets media from gallery (except deleted)
-  getMediaFromGallery() async {
+  Future<void> getGalleryPath() async {
 
     // Permission needs to be granted
     var result = await PhotoManager.requestPermission();
     if (result) {
       // success: gets all of the assets
-      List<AssetPathEntity> assetPathsList = await PhotoManager.getAssetPathList(onlyAll: true);
-      List<AssetEntity> assetList = await assetPathsList[0].getAssetListRange(start: 0, end: assetPathsList[0].assetCount);
+      var assetPathsList = await PhotoManager.getAssetPathList(onlyAll: true);
+      this.assetPath = assetPathsList[0];
 
-      // returns all except for the deleted ones
-      return await filter.filterDeleted(assetList);
     } else {
       // fail: returns nothing
       /// if result is fail, you can call `PhotoManager.openSetting();`  to open android/ios applicaton's setting to get permission
-      return [];
+      this.list = [];
     }
+  }
+
+  Future<void> getMediaFromGallery() async {
+    List<AssetEntity> assetList = await this.assetPath.getAssetListRange(
+        start: 0, end: this.assetPath.assetCount
+    );
+
+    // returns all except for the deleted ones
+    final list = await filter.filterDeleted(assetList);
+
+    this.list.clear();
+    this.list.addAll(list);
   }
 
   // PROBLEM: not really getting deleted from gallery
   // Deletes the assets from the phone gallery
-  deleteMediaFromGallery(assetList) async {
+  Future<void> deleteMediaFromGallery(assetList) async {
     var storageInfo = await PathProviderEx.getStorageInfo();
     var root = storageInfo[0].rootDir;
     print('Root: ${root}');
 
-    await assetList.forEach((path) async {
+    await assetList.forEach((asset) async {
       try {
-        var file = await File(root + '/' + path);
+        var file = await File(root + '/' + asset.path);
         var test = await file.exists();
         print('Test: ${test}');
         await file.delete();
-        _deleteCacheDir();
 
       } catch (e) {
         print('Error ${e}');
       }
     });
+
+//    _deleteCacheDir();
 
 //    await assetList.forEach((asset) async {
 //      File file = await asset.file;
@@ -56,11 +70,15 @@ class GalleryAccess {
   }
 
 
-  _deleteCacheDir() async {
+  Future<void> deleteCacheDir() async {
     final cacheDir = await getTemporaryDirectory();
 
     if (cacheDir.existsSync()) {
       cacheDir.deleteSync(recursive: true);
     }
+
+    await assetPath.refreshPathProperties();
+    await getMediaFromGallery();
+    notifyListeners();
   }
 }

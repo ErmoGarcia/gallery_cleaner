@@ -18,19 +18,20 @@ class _CleanerWidgetState extends State<CleanerWidget> {
 
   final _controller = PageController(viewportFraction: 0.8);
   final _processor = MediaProcessor();
+  final _gallery = GalleryAccess();
 
   var _mediaList;
   bool _loading = true;
 
   // Gets the media from the gallery (except deleted)
   _loadImages() async {
-//    var list = List<Uint8List>.from(await MediaProcessor().getMediaList());
-    var list = await GalleryAccess().getMediaFromGallery();
+    await _gallery.getGalleryPath();
+    await _gallery.getMediaFromGallery();
 
     // Saves the media list and stops the loading animation
     setState(() {
       _loading = false;
-      _mediaList = list;
+      _mediaList = _gallery.list;
     });
   }
 
