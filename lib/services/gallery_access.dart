@@ -41,7 +41,7 @@ class GalleryAccess extends ChangeNotifier {
     this.list.addAll(list);
   }
 
-  // PROBLEM: not really getting deleted from gallery
+  // PROBLEM: not really getting deleted from galleryflutter build initstate
   // Deletes the assets from the phone gallery
   Future<void> deleteMediaFromGallery(assetList) async {
     var storageInfo = await PathProviderEx.getStorageInfo();
@@ -56,17 +56,11 @@ class GalleryAccess extends ChangeNotifier {
         await file.delete();
 
       } catch (e) {
-        print('Error ${e}');
+        print(e);
       }
+
+      await deleteCacheDir();
     });
-
-//    _deleteCacheDir();
-
-//    await assetList.forEach((asset) async {
-//      File file = await asset.file;
-//      await file.delete();
-//      imageCache.clear();
-//    });
   }
 
 
@@ -79,6 +73,16 @@ class GalleryAccess extends ChangeNotifier {
 
     await assetPath.refreshPathProperties();
     await getMediaFromGallery();
+    notifyListeners();
+  }
+
+  void removeAtIndex(index) {
+    try {
+      this.list.removeAt(index);
+    } catch(e) {
+      print(e);
+    }
+
     notifyListeners();
   }
 }

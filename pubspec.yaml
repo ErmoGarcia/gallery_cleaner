@@ -33,7 +33,7 @@ dependencies:
   sqfentity_gen: ^1.2.3
   path_provider: ^1.6.18
   path_provider_ex: ^1.0.1
-  provider: ^3.0.0
+  provider: ^4.3.2+2
 
 dev_dependencies:
   flutter_test:

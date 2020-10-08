@@ -6,6 +6,7 @@ import 'package:mediagallerycleaner/services/gallery_access.dart';
 import 'package:mediagallerycleaner/services/process_media.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:provider/provider.dart';
 
 class Trash extends StatefulWidget {
   @override
@@ -40,9 +41,9 @@ class _TrashState extends State<Trash> {
   }
 
   // Deletes the media from the phone gallery
-  _emptyTrash() async {
+  _emptyTrash(gallery) async {
     List<Deleted> deletedList = await _deleted.select().toList();
-    await GalleryAccess().deleteMediaFromGallery(deletedList);
+    await gallery.deleteMediaFromGallery(deletedList);
     await _deleted.select().delete();
     setState(() => _loading = false);
   }
@@ -55,6 +56,8 @@ class _TrashState extends State<Trash> {
 
   @override
   Widget build(BuildContext context) {
+
+    var gallery = context.watch<GalleryAccess>();
 
     // Loading animation
     if(_loading) {
@@ -95,7 +98,7 @@ class _TrashState extends State<Trash> {
           GestureDetector(
             onTap: () async {
               if(_mediaList != null) {
-                _emptyTrash();
+                _emptyTrash(gallery);
                 setState(() {
                   _loading = true;
                   _mediaList = null;
