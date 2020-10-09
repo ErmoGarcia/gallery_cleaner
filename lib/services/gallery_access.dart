@@ -50,7 +50,7 @@ class GalleryAccess extends ChangeNotifier {
 
     await assetList.forEach((asset) async {
       try {
-        var file = await File(root + '/' + asset.path);
+        var file = File(root + '/' + asset.path);
         var test = await file.exists();
         print('Test: ${test}');
         await file.delete();

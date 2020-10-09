@@ -44,6 +44,10 @@ class Gallery extends ChangeNotifier {
     );
   }
 
+  Future<void> applyFilter(filter) async {
+    this.images = await filter(this.images);
+  }
+
   void remove(media) {
     try {
       this.images.remove(media);

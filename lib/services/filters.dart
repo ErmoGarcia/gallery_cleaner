@@ -19,9 +19,10 @@ class Filter {
   deleted(mediaList) async {
     var deletedList = await db.select().toList();
     var paths = deletedList.map((media) => media.path);
+    print(paths);
 
     return mediaList.where((media) {
-      return !paths.contains(media.id);
+      return !paths.contains(media.path);
     }).toList();
   }
 

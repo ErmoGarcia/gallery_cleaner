@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mediagallerycleaner/model/model.dart';
 import 'package:mediagallerycleaner/screens/media_preview/image_preview.dart';
+import 'package:mediagallerycleaner/screens/trash/grid.dart';
 import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/services/process_media.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -25,13 +29,14 @@ class _TrashState extends State<Trash> {
 //  var _selected = [];
 
   // Gets the media marked as deleted from the DB
-  _getDeletedMedia() async {
+  _loadMedia() async {
     List<Deleted> deletedList = await _deleted.select().toList();
-    List<AssetEntity> list = await Future.wait(
-        deletedList.map((element) async {
-          return await AssetEntity.fromId(element.img_id);
-        }).toList()
-    );
+//    List<AssetEntity> list = await Future.wait(
+//        deletedList.map((element) async {
+//          return await AssetEntity.fromId(element.img_id);
+//        }).toList()
+//    );
+    var list = deletedList.map((deleted) => File(deleted.path)).toList();
 
     // Saves the media list and stops the loading animation
     setState(() {
@@ -41,9 +46,23 @@ class _TrashState extends State<Trash> {
   }
 
   // Deletes the media from the phone gallery
-  _emptyTrash(gallery) async {
-    List<Deleted> deletedList = await _deleted.select().toList();
-    await gallery.deleteMediaFromGallery(deletedList);
+  _emptyTrash() async {
+//    List<Deleted> deletedList = await _deleted.select().toList();
+//    await gallery.deleteMediaFromGallery(deletedList);
+    await _mediaList.forEach((media) async {
+      try {
+        await media.delete();
+
+        final cacheDir = await getTemporaryDirectory();
+
+        if (cacheDir.existsSync()) {
+          cacheDir.deleteSync(recursive: true);
+        }
+      } catch (e) {
+        print(e);
+      }
+    });
+
     await _deleted.select().delete();
     setState(() => _loading = false);
   }
@@ -51,13 +70,11 @@ class _TrashState extends State<Trash> {
   @override
   void initState() {
     super.initState();
-    _getDeletedMedia();
+    _loadMedia();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    var gallery = context.watch<Gallery>();
 
     // Loading animation
     if(_loading) {
@@ -98,7 +115,7 @@ class _TrashState extends State<Trash> {
           GestureDetector(
             onTap: () async {
               if(_mediaList != null) {
-                _emptyTrash(gallery);
+                _emptyTrash();
                 setState(() {
                   _loading = true;
                   _mediaList = null;
@@ -106,7 +123,7 @@ class _TrashState extends State<Trash> {
               }
             },
 
-            // Displays message after trash has been emptied
+            // Empty button text
             child: Container(
               alignment: Alignment.center,
               padding: EdgeInsets.fromLTRB(5.0, 0, 20.0, 0),
@@ -138,55 +155,7 @@ class _TrashState extends State<Trash> {
 //          }
 
           // Media item
-          return Container(
-            padding: const EdgeInsets.all(3.0),
-            decoration: BoxDecoration(
-              color: color,
-            ),
-
-            // Shows the media thumbnails when it gets them
-            child: FutureBuilder(
-              future: _mediaList[index].thumbDataWithSize(200, 200),
-              builder: (context, snapshot) {
-
-                // Tries to retrieve the media thumbnails from phone gallery
-                if (snapshot.connectionState == ConnectionState.done) {
-                  var image = _processor.getMediaFromAsset(
-                      _mediaList[index], snapshot.data, BoxFit.cover
-                  );
-                  var imagePreview = _processor.getMediaFromAsset(
-                      _mediaList[index], snapshot.data, BoxFit.contain
-                  );
-
-                  return GestureDetector(
-                    // On long press: media asset is selected
-                    onLongPress: () {
-                      // For recovering media
-
-//                      setState(() {
-//                        _selected.add(index);
-//                      });
-                    },
-
-                    // On tap: load media preview
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ImagePreview(image: imagePreview);
-                          },
-                        ),
-                      );
-                    },
-                    child: image
-                  );
-                } else {
-                  return Loading();
-                }
-              },
-            ),
-          );
+          return TrashGridWidget(media: _mediaList[index]);
         },
       ),
     );

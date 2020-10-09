@@ -48,8 +48,6 @@ class AcceptButton extends StatelessWidget{
 class TrahsButton extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    var gallery = context.watch<Gallery>();
-    
     // Trash button
     return Align(
       alignment: Alignment.bottomRight,
@@ -64,10 +62,7 @@ class TrahsButton extends StatelessWidget{
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ChangeNotifierProvider.value(
-                      value: gallery,
-                        child: Trash()
-                    )
+                    builder: (context) => Trash()
                 ),
               );
             },
