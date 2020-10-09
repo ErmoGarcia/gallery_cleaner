@@ -4,7 +4,7 @@ import 'package:mediagallerycleaner/screens/home/animations/cloud_animation.dart
 import 'package:mediagallerycleaner/screens/home/animations/delete_animation.dart';
 import 'package:mediagallerycleaner/screens/media_preview/image_preview.dart';
 import 'package:mediagallerycleaner/model/model.dart';
-import 'package:mediagallerycleaner/services/gallery_access.dart';
+import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:mediagallerycleaner/services/process_media.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +16,11 @@ class CleanerWidget extends StatelessWidget{
     final _controller = PageController(viewportFraction: 0.8);
     final _processor = MediaProcessor();
 
-    var gallery = context.watch<GalleryAccess>();
+    var gallery = context.watch<Gallery>();
 
     return PageView.builder(
         controller: _controller,
-        itemCount: gallery.list.length,
+        itemCount: gallery.images.length,
         itemBuilder: (context, index) {
           return Center(
             child: Padding(
@@ -28,16 +28,28 @@ class CleanerWidget extends StatelessWidget{
 
                 // Loads the media thumbnails when it gets them
                 child: FutureBuilder(
-                    future: gallery.list[index].thumbDataWithSize(300, 300),
+//                    future: gallery.list[index].thumbDataWithSize(300, 300),
+                    future: gallery.images[index].readAsBytes(),
                     builder: (context, snapshot) {
 
                       // Tries to retrieve the media thumbnails from phone gallery
                       if(snapshot.connectionState == ConnectionState.done) {
-                        var image = _processor.getMediaFromAsset(
-                            gallery.list[index], snapshot.data
+//                        var image = _processor.getMediaFromAsset(
+//                            gallery.list[index], snapshot.data
+//                        );
+//                        var imagePreview = _processor.getMediaFromAsset(
+//                            gallery.list[index], snapshot.data, BoxFit.contain
+//                        );
+                        var image = Image.memory(
+                            snapshot.data,
+                            width: 300,
                         );
-                        var imagePreview = _processor.getMediaFromAsset(
-                            gallery.list[index], snapshot.data, BoxFit.contain
+
+                        var imagePreview = Image.memory(
+                          snapshot.data,
+                          fit: BoxFit.contain,
+                          height: double.infinity,
+                          width: double.infinity,
                         );
 
                         // Media thumbnail
@@ -60,7 +72,7 @@ class CleanerWidget extends StatelessWidget{
                               );
                             },
                           ),
-                          key: ValueKey(gallery.list[index]),
+                          key: ValueKey(gallery.images[index]),
                           direction: DismissDirection.vertical,
 
                           // On swipe vertical:
@@ -78,12 +90,11 @@ class CleanerWidget extends StatelessWidget{
 
                             // If swiped down: delete
                             if(direction == DismissDirection.down) {
-                              String path = gallery.list[index].relativePath + gallery.list[index].title;
-                              print('Path: ${path}');
+
                               Deleted image = Deleted();
-                              image.img_id = gallery.list[index].id;
-                              image.path = path;
-                              image.date = gallery.list[index].createDateTime;
+
+                              image.path = gallery.images[index].path;
+                              image.date = gallery.images[index].lastModifiedSync();
                               image.cloud = false;
 
                               await image.save();
@@ -91,11 +102,13 @@ class CleanerWidget extends StatelessWidget{
 
                             // Remove from swiper
 //                            setState(() => _mediaList.removeAt(index));
-                            gallery.removeAtIndex(index);
+                            gallery.remove(gallery.images[index]);
                           },
                         );
-                      } else {
+                      } else if (snapshot.connectionState == ConnectionState.waiting) {
                         return Loading();
+                      } else {
+                        return Container();
                       }
                     }
                 )

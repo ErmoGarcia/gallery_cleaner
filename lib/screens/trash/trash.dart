@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mediagallerycleaner/model/model.dart';
 import 'package:mediagallerycleaner/screens/media_preview/image_preview.dart';
-import 'package:mediagallerycleaner/services/gallery_access.dart';
+import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/services/process_media.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -57,7 +57,7 @@ class _TrashState extends State<Trash> {
   @override
   Widget build(BuildContext context) {
 
-    var gallery = context.watch<GalleryAccess>();
+    var gallery = context.watch<Gallery>();
 
     // Loading animation
     if(_loading) {

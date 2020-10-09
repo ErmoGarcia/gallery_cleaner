@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mediagallerycleaner/screens/home/cleaner.dart';
 import 'package:mediagallerycleaner/screens/home/buttons.dart';
-import 'package:mediagallerycleaner/services/gallery_access.dart';
+import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:provider/provider.dart';
 
@@ -13,21 +13,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  final _gallery = GalleryAccess();
+  final _gallery = Gallery();
 
-  var _mediaList;
   bool _loading = true;
 
   // Gets the media from the gallery (except deleted)
   _loadImages() async {
-    await _gallery.getGalleryPath();
-    await _gallery.deleteCacheDir();
-    await _gallery.getMediaFromGallery();
+
+    await _gallery.loadMedia();
+    print(_gallery.images);
 
     // Saves the media list and stops the loading animation
     setState(() {
       _loading = false;
-      _mediaList = _gallery.list;
     });
   }
 
@@ -46,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     // Displays a message if there is no media
-    if(_mediaList.isEmpty) {
+    if(_gallery.images.isEmpty) {
       return Center(
         child: Text(
           'There are no more images',

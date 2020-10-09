@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mediagallerycleaner/screens/trash/trash.dart';
 import 'package:provider/provider.dart';
-import 'package:mediagallerycleaner/services/gallery_access.dart';
+import 'package:mediagallerycleaner/services/gallery.dart';
 
 class SettingsButton extends StatelessWidget{
   @override
@@ -48,7 +48,7 @@ class AcceptButton extends StatelessWidget{
 class TrahsButton extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    var gallery = context.watch<GalleryAccess>();
+    var gallery = context.watch<Gallery>();
     
     // Trash button
     return Align(
