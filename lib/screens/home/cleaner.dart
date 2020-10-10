@@ -8,7 +8,6 @@ import 'package:mediagallerycleaner/screens/media_preview/image_preview.dart';
 import 'package:mediagallerycleaner/model/model.dart';
 import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
-import 'package:mediagallerycleaner/services/process_media.dart';
 import 'package:provider/provider.dart';
 
 class CleanerWidget extends StatelessWidget{
@@ -24,7 +23,6 @@ class CleanerWidget extends StatelessWidget{
   Widget build(BuildContext context) {
 
     final _controller = PageController(viewportFraction: 0.8);
-    final _processor = MediaProcessor();
 
     var _gallery = context.watch<Gallery>();
 

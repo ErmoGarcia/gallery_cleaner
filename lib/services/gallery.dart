@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
-import 'package:storage_path/storage_path.dart';
 
 class Gallery extends ChangeNotifier {
 

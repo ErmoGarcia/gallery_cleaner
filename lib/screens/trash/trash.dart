@@ -3,14 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mediagallerycleaner/model/model.dart';
-import 'package:mediagallerycleaner/screens/media_preview/image_preview.dart';
 import 'package:mediagallerycleaner/screens/trash/grid.dart';
-import 'package:mediagallerycleaner/services/gallery.dart';
-import 'package:mediagallerycleaner/services/process_media.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:photo_manager/photo_manager.dart';
-import 'package:provider/provider.dart';
 
 class Trash extends StatefulWidget {
   @override
@@ -21,7 +16,6 @@ class Trash extends StatefulWidget {
 class _TrashState extends State<Trash> {
 
   final _deleted = Deleted();
-  final _processor = MediaProcessor();
 
   var _mediaList;
   bool _loading = true;
