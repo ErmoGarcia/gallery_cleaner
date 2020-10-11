@@ -87,34 +87,36 @@ class _TrashState extends State<Trash> {
         backgroundColor: Colors.purpleAccent,
         actions: <Widget>[
 
-          // Empty button
-          Icon(Icons.delete, color: Colors.white,),
-
           // On tap: empties the trash and deletes the media from the phone
-          GestureDetector(
-            onTap: () async {
-              if(_mediaList != null) {
-                _emptyTrash();
-                setState(() {
-                  _loading = true;
-                  _mediaList = null;
-                });
-              }
-            },
-
-            // Empty button text
-            child: Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.fromLTRB(5.0, 0, 20.0, 0),
-              child: Text(
-                'Empty',
-                style: TextStyle(
-                  color: Colors.white,
+          InkWell(
+              onTap: () async {
+                if(_mediaList != null) {
+                  _emptyTrash();
+                  setState(() {
+                    _loading = true;
+                    _mediaList = null;
+                  });
+                }
+              },
+            child: Row(
+              children: <Widget>[
+                // Empty button
+                Icon(Icons.delete, color: Colors.white,),
+                Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.fromLTRB(5.0, 0, 20.0, 0),
+                  child: Text(
+                    'Empty',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
 //                fontSize: 20.0
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          )
+              ],
+            )
+          ),
         ],
       ),
 
