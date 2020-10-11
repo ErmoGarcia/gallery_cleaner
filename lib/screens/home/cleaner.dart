@@ -22,8 +22,6 @@ class CleanerWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    final _controller = PageController(viewportFraction: 0.8);
-
     var _gallery = context.watch<Gallery>();
 
     return FutureBuilder(
