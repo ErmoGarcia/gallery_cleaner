@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+// Permission handle for iOS and Android
+import 'package:permission_handler/permission_handler.dart';
+
 import 'package:mediagallerycleaner/screens/home/cleaner.dart';
 import 'package:mediagallerycleaner/services/filters.dart';
 import 'package:mediagallerycleaner/services/gallery.dart';
@@ -13,7 +17,7 @@ class MediaDisplayWidget extends StatefulWidget {
   _MediaDisplayWidgetState createState() => _MediaDisplayWidgetState();
 }
 
-// Shows the media that has been marked for deletion
+// Shows the media carousel from newest to oldest
 class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
   final _controller = PageController(viewportFraction: 0.8);
@@ -25,14 +29,17 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
   // Gets the media from the gallery (except deleted)
   _loadImages() async {
-    await _gallery.loadMedia();
-    await _gallery.applyFilter(filter);
 
-    // Saves the media list and stops the loading animation
-    setState(() {
-      _mediaList = _gallery.images;
-      _loading = false;
-    });
+    if (await Permission.storage.request().isGranted) {
+      await _gallery.loadMedia();
+      await _gallery.applyFilter(filter);
+
+      // Saves the media list and stops the loading animation
+      setState(() {
+        _mediaList = _gallery.images;
+        _loading = false;
+      });
+    }
   }
 
   @override
