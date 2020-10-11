@@ -22,7 +22,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
   final _controller = PageController(viewportFraction: 0.8);
   final _gallery = Gallery();
-  final filter = Filter().deleted;
+  final filter = Filter();
 
   List<File> _mediaList;
   bool _loading = true;
@@ -31,12 +31,11 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
   _loadImages() async {
 
     if (await Permission.storage.request().isGranted) {
-      await _gallery.loadMedia();
-      await _gallery.applyFilter(filter);
+      await _gallery.loadMedia([filter.deleted]);
 
       // Saves the media list and stops the loading animation
       setState(() {
-        _mediaList = _gallery.images;
+        _mediaList = _gallery.media;
         _loading = false;
       });
     }

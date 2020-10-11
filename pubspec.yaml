@@ -34,6 +34,7 @@ dependencies:
   path_provider_ex: ^1.0.1
   provider: ^4.3.2+2
   permission_handler: ^5.0.1+1
+  collection: ^1.14.12
 
 dev_dependencies:
   flutter_test:
