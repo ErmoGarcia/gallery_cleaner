@@ -138,7 +138,7 @@ class _TrashState extends State<Trash> {
         },
       ) : Center(
         child: Text(
-          'There are no images to delete',
+          'Trash is empty',
           style: TextStyle(
               color: Colors.grey[400],
               fontSize: 24.0
