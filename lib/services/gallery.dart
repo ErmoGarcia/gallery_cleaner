@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'dart:core';
 
-// import 'package:flutter/foundation.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mediagallerycleaner/services/filters.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
@@ -11,11 +9,11 @@ class Gallery extends ChangeNotifier {
 
   List<File> media = [];
 
-  Future<void> loadMedia(List<Function> filters) async {
+  Future<void> loadMedia() async {
     List<StorageInfo> storageInfo = await PathProviderEx.getStorageInfo();
     String root = storageInfo[0].rootDir + '/';
 
-    var deletedList = await Filter().deleted();
+    List<String> deletedList = await Filter().deleted();
 
     await Directory(root).list(
         recursive: true,
@@ -70,10 +68,6 @@ class Gallery extends ChangeNotifier {
 
     this.media.insert(mid, f1);
     return;
-  }
-
-  Future<void> applyFilter(filter) async {
-    this.media = await filter(this.media);
   }
 
   bool isImage(path) {
