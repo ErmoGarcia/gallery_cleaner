@@ -75,21 +75,6 @@ class _TrashState extends State<Trash> {
       return Loading();
     }
 
-    // Displays a message if there is no media
-    if(_mediaList == null) {
-      return Scaffold(
-        backgroundColor: Colors.grey[850],
-        body: Center(
-          child: Text(
-            'There are no images to delete',
-            style: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 24.0
-            ),
-          ),
-        ),
-      );
-    }
 
     // Displays the media grid
     return Scaffold(
@@ -98,7 +83,7 @@ class _TrashState extends State<Trash> {
       // Bar containing the title and "empty" button
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Deleted Media'),
+        title: Text('Trash'),
         backgroundColor: Colors.purpleAccent,
         actions: <Widget>[
 
@@ -135,7 +120,7 @@ class _TrashState extends State<Trash> {
 
 
       // Grid containing the media
-      body: GridView.builder(
+      body: _mediaList == null ? GridView.builder(
         itemCount: _mediaList.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemBuilder: (context, index) {
@@ -151,6 +136,14 @@ class _TrashState extends State<Trash> {
           // Media item
           return TrashGridWidget(media: _mediaList[index]);
         },
+      ) : Center(
+        child: Text(
+          'There are no images to delete',
+          style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 24.0
+          ),
+        ),
       ),
     );
   }
