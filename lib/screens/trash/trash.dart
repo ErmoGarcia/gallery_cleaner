@@ -120,7 +120,7 @@ class _TrashState extends State<Trash> {
 
 
       // Grid containing the media
-      body: _mediaList == null ? GridView.builder(
+      body: _mediaList != null ? GridView.builder(
         itemCount: _mediaList.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemBuilder: (context, index) {
