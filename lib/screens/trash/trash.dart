@@ -17,6 +17,7 @@ class _TrashState extends State<Trash> {
 
   final _deleted = Deleted();
 
+  var _selectedList;
   var _mediaList;
   bool _loading = true;
 
@@ -83,7 +84,11 @@ class _TrashState extends State<Trash> {
       // Bar containing the title and "empty" button
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Trash'),
+        title: Text('Trash',
+        style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+        fontSize: 20.0), ),
         backgroundColor: Colors.purpleAccent,
         actions: <Widget>[
 
@@ -110,7 +115,7 @@ class _TrashState extends State<Trash> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-//                fontSize: 20.0
+                      fontSize: 18.0
                     ),
                   ),
                 ),
@@ -122,22 +127,31 @@ class _TrashState extends State<Trash> {
 
 
       // Grid containing the media
-      body: _mediaList != null ? GridView.builder(
-        itemCount: _mediaList.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemBuilder: (context, index) {
+      body: _mediaList != null ? Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          itemCount: _mediaList.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2),
+          itemBuilder: (context, index) {
 
-          // When an item is selected: change the color of the borders
-          var color;
+            // When an item is selected: change the color of the borders
+            var color;
 //          if(_selected != null && _selected.contains(index)) {
 //            color = Colors.indigoAccent;
 //          } else {
 //            color = Colors.grey[850];
 //          }
 
-          // Media item
-          return TrashGridWidget(media: _mediaList[index]);
-        },
+            // Media item
+            return TrashGridWidget(
+                media: _mediaList[index],
+                key: Key(index.toString())
+            );
+          },
+        ),
       ) : Center(
         child: Text(
           'Trash is empty',
