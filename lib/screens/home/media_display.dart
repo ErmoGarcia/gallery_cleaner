@@ -21,6 +21,21 @@ class MediaDisplayWidget extends StatefulWidget {
 class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
   final _controller = PageController(viewportFraction: 0.8);
+
+  void nextPage() async {
+    await _controller.nextPage(
+      duration: Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void prevPage() async {
+    await _controller.previousPage(
+      duration: Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
   final _gallery = Gallery();
 
   List<File> _mediaList;
@@ -75,18 +90,29 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
         itemBuilder: (context, index) {
           context.watch<Gallery>();
 
-          return Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+          return GestureDetector(
+            onPanUpdate: (details) {
+              if (details.delta.dx < 0) {
+                nextPage();
+              }
+              if (details.delta.dx > 0) {
+                prevPage();
+              }
+            },
+            child: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
 
-                // Loads the media thumbnails when it gets them
-                child: Provider.value(
-                  value: _mediaList[index],
-                  child: CleanerWidget(),
-                )
-              ),
+                  // Loads the media thumbnails when it gets them
+                  child: Provider.value(
+                    value: _mediaList[index],
+                    child: CleanerWidget(),
+                  )
+                ),
+            ),
           );
         },
+        physics: NeverScrollableScrollPhysics(),
         scrollDirection: Axis.horizontal,
       ),
     );
