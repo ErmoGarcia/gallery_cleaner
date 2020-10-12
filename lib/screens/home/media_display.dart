@@ -80,8 +80,9 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
 
                 // Loads the media thumbnails when it gets them
-                child: CleanerWidget(
-                  media: _mediaList[index]
+                child: Provider.value(
+                  value: _mediaList[index],
+                  child: CleanerWidget(),
                 )
               ),
           );

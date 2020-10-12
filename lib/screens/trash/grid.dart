@@ -33,13 +33,6 @@ class TrashGridWidget extends StatelessWidget {
       width: 300,
     );
 
-    var imagePreview = Image.memory(
-      bytes,
-      fit: BoxFit.contain,
-      height: double.infinity,
-      width: double.infinity,
-    );
-
     return Container(
       padding: const EdgeInsets.all(3.0),
       decoration: BoxDecoration(
@@ -63,7 +56,7 @@ class TrashGridWidget extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) {
-                return ImagePreview(image: imagePreview);
+                return ImagePreview(image: bytes);
               },
             ),
           );
