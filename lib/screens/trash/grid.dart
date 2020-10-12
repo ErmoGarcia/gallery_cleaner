@@ -2,8 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mediagallerycleaner/screens/home/thumbnails/video_thumbnail.dart';
 import 'package:mediagallerycleaner/screens/media_preview/image_preview.dart';
+import 'package:mediagallerycleaner/screens/media_preview/video_preview.dart';
+import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
+import 'package:provider/provider.dart';
 
 class TrashGridWidget extends StatefulWidget {
 
@@ -29,6 +33,7 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
   @override
   Widget build(BuildContext context) {
 
+    Gallery _gallery = Provider.of<Gallery>(context, listen: false);
 
     // When an item is selected: change the color of the borders
     var color;
@@ -39,12 +44,13 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
 //    }
 
     // Tries to retrieve the media thumbnails from phone gallery
-    var bytes = widget.media.readAsBytesSync();
-
-    var image = Image.memory(
-      bytes,
-      width: 300,
-    );
+    var image = _gallery.isImage(widget.media.path) ? Image.memory(
+          widget.media.readAsBytesSync(),
+          width: 300,
+        ) : Provider.value(
+            value: widget.media,
+            child: VideoThumbnail()
+          );
 
     return InkWell(
       // On tap: load media preview
@@ -53,7 +59,11 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return ImagePreview(image: bytes);
+              return _gallery.isImage(widget.media.path) ? ImagePreview(
+                  image: widget.media.readAsBytesSync()
+              ) : Provider.value(
+                    value: widget.media, child: VideoPreview()
+                );
             },
           ),
         );

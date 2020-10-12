@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mediagallerycleaner/model/model.dart';
 import 'package:mediagallerycleaner/screens/trash/grid.dart';
+import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 
 class Trash extends StatefulWidget {
   @override
@@ -15,10 +17,9 @@ class Trash extends StatefulWidget {
 // Shows the media that has been marked for deletion
 class _TrashState extends State<Trash> {
 
-  final _deleted = Deleted();
+  final Deleted _deleted = Deleted();
 
-  var _selectedList;
-  var _mediaList;
+  List<File> _mediaList;
   bool _loading = true;
 
 //  var _selected = [];
@@ -26,12 +27,7 @@ class _TrashState extends State<Trash> {
   // Gets the media marked as deleted from the DB
   _loadMedia() async {
     List<Deleted> deletedList = await _deleted.select().toList();
-//    List<AssetEntity> list = await Future.wait(
-//        deletedList.map((element) async {
-//          return await AssetEntity.fromId(element.img_id);
-//        }).toList()
-//    );
-    var list = deletedList.map((deleted) => File(deleted.path)).toList();
+    List<File> list = deletedList.map((deleted) => File(deleted.path)).toList();
 
     // Saves the media list and stops the loading animation
     setState(() {
@@ -42,9 +38,7 @@ class _TrashState extends State<Trash> {
 
   // Deletes the media from the phone gallery
   _emptyTrash() async {
-//    List<Deleted> deletedList = await _deleted.select().toList();
-//    await gallery.deleteMediaFromGallery(deletedList);
-    await _mediaList.forEach((media) async {
+    _mediaList.forEach((media) async {
       try {
         await media.delete();
 
@@ -75,7 +69,6 @@ class _TrashState extends State<Trash> {
     if(_loading) {
       return Loading();
     }
-
 
     // Displays the media grid
     return Scaffold(
@@ -147,8 +140,8 @@ class _TrashState extends State<Trash> {
 
             // Media item
             return TrashGridWidget(
-                media: _mediaList[index],
-                key: Key(index.toString())
+              media: _mediaList[index],
+              key: Key(index.toString())
             );
           },
         ),

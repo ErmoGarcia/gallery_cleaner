@@ -36,20 +36,22 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
     );
   }
 
-  final _gallery = Gallery();
+  // final _gallery = Gallery();
+  Gallery _gallery;
 
   List<File> _mediaList;
   bool _loading = true;
 
   // Gets the media from the gallery (except deleted)
-  _loadImages() async {
+  _loadImages(Gallery gallery) async {
 
     if (await Permission.storage.request().isGranted) {
-      await _gallery.loadMedia();
+      await gallery.loadMedia();
 
       // Saves the media list and stops the loading animation
       setState(() {
-        _mediaList = _gallery.media;
+        _gallery = gallery;
+        _mediaList = gallery.media;
         _loading = false;
       });
     }
@@ -58,7 +60,9 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
   @override
   void initState() {
     super.initState();
-    _loadImages();
+
+    final Gallery gallery = Provider.of<Gallery>(context, listen: false);
+    _loadImages(gallery);
   }
 
   @override

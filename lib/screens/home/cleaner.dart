@@ -28,21 +28,13 @@ class _CleanerWidgetState extends State<CleanerWidget> {
     
     var media = Provider.of<File>(context);
 
-    var image;
-
-    if (_gallery.isImage(media.path)) {
-      image = Image.memory(
+    var image = _gallery.isImage(media.path) ? Image.memory(
         media.readAsBytesSync(),
         width: 300,
-      );
-    }
-
-    else if (_gallery.isVideo(media.path)) {
-      image = Provider.value(
+      ) : Provider.value(
           value: media,
           child: VideoThumbnail()
       );
-    }
 
     // Media thumbnail
     return Dismissible(
@@ -58,15 +50,11 @@ class _CleanerWidgetState extends State<CleanerWidget> {
             context,
             MaterialPageRoute(
               builder: (context) {
-                if(_gallery.isImage(media.path)) {
-                  return ImagePreview(image: media.readAsBytesSync());
-                }
-                else if (_gallery.isVideo(media.path)) {
-                  return Provider.value(value: media, child: VideoPreview());
-                }
-                else {
-                  return Loading();
-                }
+                return _gallery.isImage(media.path) ? ImagePreview(
+                    image: media.readAsBytesSync()
+                ) : Provider.value(
+                    value: media, child: VideoPreview()
+                );
               },
             ),
           );
