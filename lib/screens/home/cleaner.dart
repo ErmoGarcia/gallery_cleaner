@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -39,33 +38,10 @@ class _CleanerWidgetState extends State<CleanerWidget> {
     }
 
     else if (_gallery.isVideo(media.path)) {
-      // Future<Uint8List> thumbnail = VideoThumbnail.thumbnailData(
-      //   video: media.path,
-      //   maxWidth: 300, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-      // );
-
       image = Provider.value(
           value: media,
           child: VideoThumbnail()
       );
-      // FutureBuilder(
-      //   future: thumbnail,
-      //   builder: (context, snapshot) {
-      //     if(snapshot.connectionState == ConnectionState.done) {
-      //       return Stack(
-      //         children: <Widget>[
-      //           Icon(Icons.play_arrow),
-      //
-      //           Image.memory(
-      //             snapshot.data,
-      //           ),
-      //         ],
-      //       );
-      //     } else {
-      //       return Loading();
-      //     }
-      //   },
-      // );
     }
 
     // Media thumbnail
