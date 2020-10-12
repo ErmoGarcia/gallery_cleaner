@@ -51,12 +51,28 @@ class _TrashState extends State<Trash> {
       }
     });
 
-    await _deleted.select().delete();
-    setState(() => _loading = false);
+    final result = await _deleted.select().delete();
+    print(result.toString());
+
+    setState(() {
+      _loading = false;
+      _mediaList.clear();
+    });
   }
 
-  _recoverSelected() async {
-    //TODO: deletes selected files from database and adds the back too gallery
+  _recoverSelected(gallery) async {
+
+    _selected.forEach((file) async {
+      gallery.add(file);
+      final result = await _deleted.select().path.equals(file.path).delete();
+      print(result.toString());
+    });
+
+    setState(() {
+      _loading = false;
+      _mediaList.removeWhere((file) => _selected.contains(file));
+      _selected.clear();
+    });
   }
 
   @override
@@ -67,6 +83,8 @@ class _TrashState extends State<Trash> {
 
   @override
   Widget build(BuildContext context) {
+
+    Gallery _gallery = Provider.of<Gallery>(context, listen: false);
 
     // Loading animation
     if(_loading) {
@@ -97,13 +115,11 @@ class _TrashState extends State<Trash> {
                   _emptyTrash();
                   setState(() {
                     _loading = true;
-                    _mediaList.clear();
                   });
                 } else if(_selected.isNotEmpty) {
+                  _recoverSelected(_gallery);
                   setState(() {
-                    _recoverSelected();
                     _loading = true;
-                    _selected.clear();
                   });
                 }
               },
