@@ -70,15 +70,20 @@ class Gallery extends ChangeNotifier {
     return;
   }
 
-  bool isImage(path) {
+  bool isImage(String path) {
     return path.endsWith('.png') || path.endsWith('.jpg');
   }
 
-  bool isVideo(path) {
+  bool isVideo(String path) {
     return path.endsWith('.mp4');
   }
 
-  void remove(media) {
+  void add(File media) {
+    sortInsert(media);
+    notifyListeners();
+  }
+
+  void remove(File media) {
     try {
       this.media.remove(media);
     } catch(e) {
