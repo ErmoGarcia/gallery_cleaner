@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -16,19 +17,19 @@ class VideoPreview extends StatefulWidget{
 class _VideoPreviewState extends State<VideoPreview> {
 
   VideoPlayerController _controller;
-  Future<void> _initializeVideoPlayerFuture;
   bool _loading = true;
+  File _media;
 
   _loadVideo(media) async {
     print(media);
     _controller = VideoPlayerController.file(media);
 
     _controller.setLooping(true);
-    _controller.setVolume(0.0);
+    _controller.setVolume(1.0);
     _controller.initialize().then((_) =>
         setState(() {
+          _media = media;
           _loading= false;
-          _controller.play();
         }));
   }
 
@@ -55,17 +56,49 @@ class _VideoPreviewState extends State<VideoPreview> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: GestureDetector(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Center(
-          child: AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: VideoPlayer(_controller),
+      body: Stack(
+        children: <Widget>[
+          Dismissible(
+            movementDuration: Duration(milliseconds: 0),
+            dismissThresholds: {DismissDirection.vertical: 0.2},
+            key: ValueKey(_media),
+            direction: DismissDirection.vertical,
+            onDismissed: (direction) {
+              Navigator.pop(context);
+            },
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if(_controller.value.isPlaying) {
+                    _controller.pause();
+                  } else {
+                    _controller.play();
+                  }
+                });
+              },
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: Stack(
+                    children: <Widget>[
+                      VideoPlayer(_controller),
+                      Center(
+                        child: Icon(
+                          _controller.value.isPlaying
+                              ? Icons.pause_circle_outline
+                              : Icons.play_circle_outline,
+                          color: Colors.white,
+                          size: 100.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
-      )
+        ],
+      ),
     );
   }
 }

@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mediagallerycleaner/screens/home/animations/cloud_animation.dart';
 import 'package:mediagallerycleaner/screens/home/animations/delete_animation.dart';
+import 'package:mediagallerycleaner/screens/home/thumbnails/video_thumbnail.dart';
 import 'package:mediagallerycleaner/screens/media_preview/image_preview.dart';
 import 'package:mediagallerycleaner/model/model.dart';
 import 'package:mediagallerycleaner/screens/media_preview/video_preview.dart';
 import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:provider/provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class CleanerWidget extends StatefulWidget{
 
@@ -39,29 +39,33 @@ class _CleanerWidgetState extends State<CleanerWidget> {
     }
 
     else if (_gallery.isVideo(media.path)) {
-      Future<Uint8List> thumbnail = VideoThumbnail.thumbnailData(
-        video: media.path,
-        maxWidth: 300, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-      );
+      // Future<Uint8List> thumbnail = VideoThumbnail.thumbnailData(
+      //   video: media.path,
+      //   maxWidth: 300, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      // );
 
-      image = FutureBuilder(
-        future: thumbnail,
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.done) {
-            return Stack(
-              children: <Widget>[
-                Icon(Icons.play_arrow),
-
-                Image.memory(
-                  snapshot.data,
-                ),
-              ],
-            );
-          } else {
-            return Loading();
-          }
-        },
+      image = Provider.value(
+          value: media,
+          child: VideoThumbnail()
       );
+      // FutureBuilder(
+      //   future: thumbnail,
+      //   builder: (context, snapshot) {
+      //     if(snapshot.connectionState == ConnectionState.done) {
+      //       return Stack(
+      //         children: <Widget>[
+      //           Icon(Icons.play_arrow),
+      //
+      //           Image.memory(
+      //             snapshot.data,
+      //           ),
+      //         ],
+      //       );
+      //     } else {
+      //       return Loading();
+      //     }
+      //   },
+      // );
     }
 
     // Media thumbnail
