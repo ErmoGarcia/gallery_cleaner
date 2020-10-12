@@ -1,17 +1,19 @@
 import 'dart:io';
+import 'dart:core';
 
 import 'package:flutter/widgets.dart';
+import 'package:mediagallerycleaner/services/filters.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
 
 class Gallery extends ChangeNotifier {
 
-//  List<dynamic> list = [];
-  List<File> images = [];
-  List<File> videos = [];
+  List<File> media = [];
 
   Future<void> loadMedia() async {
     List<StorageInfo> storageInfo = await PathProviderEx.getStorageInfo();
     String root = storageInfo[0].rootDir + '/';
+
+    List<String> deletedList = await Filter().deleted();
 
     await Directory(root).list(
         recursive: true,
@@ -28,28 +30,57 @@ class Gallery extends ChangeNotifier {
         return;
       }
 
-      if(path.endsWith('.png') || path.endsWith('.jpg')) {
-        this.images.add(file);
+      if (deletedList.contains(file.path)) return;
+
+      if(isImage(path)) {
+        sortInsert(file);
       }
 
-      else if(path.endsWith('.mp4')) {
-        this.videos.add(file);
+      else if(isVideo(path)) {
+        sortInsert(file);
       }
 
     });
 
-    this.images.sort((f1, f2) =>
-        f2.lastModifiedSync().compareTo(f1.lastModifiedSync())
-    );
   }
 
-  Future<void> applyFilter(filter) async {
-    this.images = await filter(this.images);
+  // Performs a binary search on the media list
+  // and inserts the file ordered by date (more recent first)
+  void sortInsert(File f1) {
+    int min = 0;
+    int max = this.media.length;
+    int mid = min + ((max - min) >> 1);
+
+    while (min < max) {
+      mid = min + ((max - min) >> 1);
+      File f2 = this.media[mid];
+
+      int comp = f1.lastModifiedSync().compareTo(f2.lastModifiedSync());
+      if (comp == 0) {
+        this.media.insert(mid, f1);
+        return;
+      } else if (comp < 0) {
+        min = mid + 1;
+      } else {
+        max = mid;
+      }
+    }
+
+    this.media.insert(mid, f1);
+    return;
+  }
+
+  bool isImage(path) {
+    return path.endsWith('.png') || path.endsWith('.jpg');
+  }
+
+  bool isVideo(path) {
+    return path.endsWith('.mp4');
   }
 
   void remove(media) {
     try {
-      this.images.remove(media);
+      this.media.remove(media);
     } catch(e) {
       print(e);
     }

@@ -1,19 +1,7 @@
 # mediagallerycleaner
 
-A new Flutter application.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+An application that makes easier and faster to free up space in your phone, allowing you to delete
+photos and videos with its simple and intuitive UI.
 
 ## TODO
 
@@ -27,7 +15,7 @@ samples, guidance on mobile development, and a full API reference.
 
 5- Remember media to be saved
 
-6- Preview for videos
+~~6- Preview for videos~~
 
 7- Add cloud functionality
 

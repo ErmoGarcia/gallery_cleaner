@@ -46,13 +46,6 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
       width: 300,
     );
 
-    var imagePreview = Image.memory(
-      bytes,
-      fit: BoxFit.contain,
-      height: double.infinity,
-      width: double.infinity,
-    );
-
     return InkWell(
       // On tap: load media preview
       onTap: (){
@@ -60,7 +53,7 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return ImagePreview(image: imagePreview);
+              return ImagePreview(image: bytes);
             },
           ),
         );
