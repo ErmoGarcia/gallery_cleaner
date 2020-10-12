@@ -27,7 +27,7 @@ samples, guidance on mobile development, and a full API reference.
 
 5- Remember media to be saved
 
-6- Preview for videos
+~~6- Preview for videos~~
 
 7- Add cloud functionality
 
