@@ -13,11 +13,13 @@ class TrashGridWidget extends StatefulWidget {
   final Key key;
   final File media;
   final bool isSelected;
+  final bool isImage;
 
   TrashGridWidget({
     this.key,
     @required this.media,
-    this.isSelected
+    this.isSelected,
+    this.isImage
   }) : super(key: key);
 
   @override
@@ -30,10 +32,8 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
   @override
   Widget build(BuildContext context) {
 
-    Gallery _gallery = Provider.of<Gallery>(context, listen: false);
-    
     // Tries to retrieve the media thumbnails from phone gallery
-    var image = _gallery.isImage(widget.media.path) ? Image.memory(
+    var image = widget.isImage ? Image.memory(
           widget.media.readAsBytesSync(),
           width: 300,
         ) : Provider.value(
@@ -48,7 +48,7 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return _gallery.isImage(widget.media.path) ? ImagePreview(
+              return widget.isImage ? ImagePreview(
                   image: widget.media.readAsBytesSync()
               ) : Provider.value(
                     value: widget.media, child: VideoPreview()

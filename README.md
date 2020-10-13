@@ -9,9 +9,9 @@ photos and videos with its simple and intuitive UI.
 
 2- Fix animations when image is swiped vertically
 
-3- Fix movement when swiping
+~~3- Fix movement when swiping~~
 
-4- Add recovery from gallery
+~~4- Add recovery from gallery~~
 
 5- Remember media to be saved
 
@@ -20,3 +20,17 @@ photos and videos with its simple and intuitive UI.
 7- Add cloud functionality
 
 8- Add settings
+
+### Fixes and enhancements
+
+- insertSort() not working as expected
+
+- Video player contaminating logs with weird codec errors
+
+- Scrolling can be improved
+
+- Move trash recovery to a new screen
+
+- Use File class async methods
+
+- Preview animations not working as they should

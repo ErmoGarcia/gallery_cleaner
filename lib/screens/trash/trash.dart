@@ -37,7 +37,7 @@ class _TrashState extends State<Trash> {
 
   // Deletes the media from the phone gallery
   _emptyTrash() async {
-    _mediaList.forEach((media) async {
+    for(File media in _mediaList) {
       try {
         await media.delete();
 
@@ -49,7 +49,7 @@ class _TrashState extends State<Trash> {
       } catch (e) {
         print(e);
       }
-    });
+    }
 
     final result = await _deleted.select().delete();
     print(result.toString());
@@ -62,16 +62,18 @@ class _TrashState extends State<Trash> {
 
   _recoverSelected(gallery) async {
 
-    _selected.forEach((file) async {
+    for (File file in _selected) {
       gallery.add(file);
       final result = await _deleted.select().path.equals(file.path).delete();
       print(result.toString());
-    });
+    }
 
     setState(() {
       _loading = false;
+      print(_selected);
       _mediaList.removeWhere((file) => _selected.contains(file));
       _selected.clear();
+      print(_selected);
     });
   }
 
@@ -184,6 +186,7 @@ class _TrashState extends State<Trash> {
                   media: _mediaList[index],
                   key: Key(index.toString()),
                   isSelected: _selected.contains(_mediaList[index]),
+                  isImage: _gallery.isImage(_mediaList[index].path),
                 ),
               ),
             );
