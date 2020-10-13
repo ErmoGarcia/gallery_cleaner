@@ -5,22 +5,28 @@ import 'package:mediagallerycleaner/model/model.dart';
 import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:path_provider/path_provider.dart';
 
-class Trash extends ChangeNotifier {
-
-  final Gallery gallery;
-  Trash({@required this.gallery});
+class TrashGallery extends ChangeNotifier {
 
   final Deleted db = Deleted();
 
-  List<File> mediaList;
-  List<File> selectedList;
+  List<File> mediaList = [];
+  List<File> selectedList = [];
 
-  void select(media) {
-    this.selectedList.add(media);
-  }
+  // void select(media) {
+  //   this.selectedList.add(media);
+  // }
+  //
+  // void unselect(media) {
+  //   this.selectedList.remove(media);
+  // }
 
-  void unselect(media) {
-    this.selectedList.remove(media);
+  void switchSelect(File media, bool isSelected) {
+    if(isSelected) {
+      this.selectedList.remove(media);
+    } else {
+      this.selectedList.add(media);
+    }
+    notifyListeners();
   }
 
   Future<void> loadMedia() async {
@@ -52,7 +58,7 @@ class Trash extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> recoverSelected() async {
+  Future<void> recoverSelected(Gallery gallery) async {
     for (File file in this.selectedList) {
       gallery.add(file);
       final result = await db.select().path.equals(file.path).delete();

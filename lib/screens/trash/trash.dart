@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mediagallerycleaner/model/model.dart';
 import 'package:mediagallerycleaner/screens/trash/grid.dart';
+import 'package:mediagallerycleaner/screens/trash/recovery/recovery.dart';
 import 'package:mediagallerycleaner/services/gallery.dart';
+import 'package:mediagallerycleaner/services/trash_gallery.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,65 +19,45 @@ class Trash extends StatefulWidget {
 // Shows the media that has been marked for deletion
 class _TrashState extends State<Trash> {
 
-  final Deleted _deleted = Deleted();
+  final TrashGallery trash = TrashGallery();
 
-  List<File> _selected = [];
-  List<File> _mediaList = [];
   bool _loading = true;
 
   // Gets the media marked as deleted from the DB
   _loadMedia() async {
-    List<Deleted> deletedList = await _deleted.select().toList();
-    List<File> list = deletedList.map((deleted) => File(deleted.path)).toList();
+    await trash.loadMedia();
 
     // Saves the media list and stops the loading animation
     setState(() {
-      _mediaList.addAll(list);
       _loading = false;
     });
   }
 
   // Deletes the media from the phone gallery
   _emptyTrash() async {
-    for(File media in _mediaList) {
-      try {
-        await media.delete();
-
-        final cacheDir = await getTemporaryDirectory();
-
-        if (cacheDir.existsSync()) {
-          cacheDir.deleteSync(recursive: true);
-        }
-      } catch (e) {
-        print(e);
-      }
-    }
-
-    final result = await _deleted.select().delete();
-    print(result.toString());
+    await trash.emptyTrash();
 
     setState(() {
       _loading = false;
-      _mediaList.clear();
     });
   }
 
-  _recoverSelected(gallery) async {
-
-    for (File file in _selected) {
-      gallery.add(file);
-      final result = await _deleted.select().path.equals(file.path).delete();
-      print(result.toString());
-    }
-
-    setState(() {
-      _loading = false;
-      print(_selected);
-      _mediaList.removeWhere((file) => _selected.contains(file));
-      _selected.clear();
-      print(_selected);
-    });
-  }
+  // _recoverSelected(gallery) async {
+  //
+  //   for (File file in _selected) {
+  //     gallery.add(file);
+  //     final result = await _deleted.select().path.equals(file.path).delete();
+  //     print(result.toString());
+  //   }
+  //
+  //   setState(() {
+  //     _loading = false;
+  //     print(_selected);
+  //     _mediaList.removeWhere((file) => _selected.contains(file));
+  //     _selected.clear();
+  //     print(_selected);
+  //   });
+  // }
 
   @override
   void initState() {
@@ -100,26 +82,21 @@ class _TrashState extends State<Trash> {
       // Bar containing the title and "empty" button
       appBar: AppBar(
         centerTitle: true,
-        title: Text(_selected.isEmpty
-            ? 'Trash'
-            : '${_selected.length} selected',
-        style: TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        fontSize: 20.0), ),
+        title: Text(
+          'Trash',
+          style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          fontSize: 20.0),
+        ),
         backgroundColor: Colors.purpleAccent,
         actions: <Widget>[
 
           // On tap: empties the trash and deletes the media from the phone
           InkWell(
               onTap: () async {
-                if(_mediaList.isNotEmpty && _selected.isEmpty) {
+                if(trash.mediaList.isNotEmpty) {
                   _emptyTrash();
-                  setState(() {
-                    _loading = true;
-                  });
-                } else if(_selected.isNotEmpty) {
-                  _recoverSelected(_gallery);
                   setState(() {
                     _loading = true;
                   });
@@ -129,14 +106,14 @@ class _TrashState extends State<Trash> {
               children: <Widget>[
                 // Empty button
                 Icon(
-                  _selected.isEmpty ? Icons.delete : Icons.file_upload,
+                  Icons.delete,
                   color: Colors.white,
                 ),
                 Container(
                   alignment: Alignment.center,
                   padding: EdgeInsets.fromLTRB(5.0, 0, 20.0, 0),
                   child: Text(
-                    _selected.isEmpty ? 'Empty' : 'Recover',
+                    'Empty',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -152,53 +129,63 @@ class _TrashState extends State<Trash> {
 
 
       // Grid containing the media
-      body: _mediaList.isNotEmpty ? Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          itemCount: _mediaList.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 2,
-              mainAxisSpacing: 2),
-          itemBuilder: (context, index) {
+      body: ChangeNotifierProvider.value(
+        value: trash,
+        child: Builder(
+          builder: (BuildContext context) {
+            context.watch<TrashGallery>();
 
-            // Media item
-            return InkWell(
-              onTap: () {
-                setState(() {
-                  _selected.contains(_mediaList[index])
-                      ? _selected.remove(_mediaList[index])
-                      : _selected.add(_mediaList[index]);
-                });
-              },
+            return trash.mediaList.isNotEmpty ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GridView.builder(
+                itemCount: trash.mediaList.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 2,
+                    mainAxisSpacing: 2),
+                itemBuilder: (context, index) {
 
-              // On long press select for recovery
-              onLongPress: () {
-                if(_selected.isEmpty) {
-                  setState(() {
-                    _selected.add(_mediaList[index]);
-                  });
-                }
-              },
-              child: AbsorbPointer(
-                absorbing: _selected.isNotEmpty,
-                child: TrashGridWidget(
-                  media: _mediaList[index],
-                  key: Key(index.toString()),
-                  isSelected: _selected.contains(_mediaList[index]),
-                  isImage: _gallery.isImage(_mediaList[index].path),
+                  // Media item
+                  return InkWell(
+                    // On long press select for recovery
+                    onLongPress: () {
+
+                      trash.selectedList.add(trash.mediaList[index]);
+
+                      Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder: (context, _, __) => MultiProvider(
+                                  providers: [
+                                    ListenableProvider.value(value: _gallery),
+                                    ListenableProvider.value(value: trash)
+                                  ],
+                                  child: Recovery()
+                              ),
+                            transitionDuration: Duration(seconds: 0),
+                          )
+                      );
+                    },
+
+                    child: TrashGridWidget(
+                      media: trash.mediaList[index],
+                      key: Key(index.toString()),
+                      isSelected: false,
+                      selectMode: false,
+                    ),
+                  );
+                },
+              ),
+            ) : Center(
+              child: Text(
+                'Trash is empty',
+                style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 24.0
                 ),
               ),
             );
           },
-        ),
-      ) : Center(
-        child: Text(
-          'Trash is empty',
-          style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 24.0
-          ),
         ),
       ),
     );
