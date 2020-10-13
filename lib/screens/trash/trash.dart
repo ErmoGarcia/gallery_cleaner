@@ -144,7 +144,7 @@ class _TrashState extends State<Trash> {
                     crossAxisSpacing: 2,
                     mainAxisSpacing: 2),
                 itemBuilder: (context, index) {
-
+                  print('IS BUILDING ITEM');
                   // Media item
                   return InkWell(
                     // On long press select for recovery

@@ -12,21 +12,14 @@ class TrashGallery extends ChangeNotifier {
   List<File> mediaList = [];
   List<File> selectedList = [];
 
-  // void select(media) {
-  //   this.selectedList.add(media);
-  // }
-  //
-  // void unselect(media) {
-  //   this.selectedList.remove(media);
-  // }
-
   void switchSelect(File media, bool isSelected) {
     if(isSelected) {
       this.selectedList.remove(media);
+      if(this.selectedList.isEmpty) {notifyListeners();}
     } else {
       this.selectedList.add(media);
     }
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> loadMedia() async {

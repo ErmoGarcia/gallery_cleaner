@@ -58,20 +58,12 @@ class _RecoveryState extends State<Recovery> {
           },
         ),
         centerTitle: true,
-        title: ChangeNotifierProvider.value(
-          value: _trash,
-          child: Builder(
-            builder: (BuildContext context) {
-              context.watch<TrashGallery>();
-              return Text(
-                '${_trash.selectedList.length} selected',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 20.0),
-              );
-            },
-          ),
+        title: Text(
+          '${_trash.selectedList.length} selected',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 20.0),
         ),
         backgroundColor: Colors.purpleAccent,
         actions: <Widget>[
