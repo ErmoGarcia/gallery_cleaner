@@ -29,7 +29,9 @@ photos and videos with its simple and intuitive UI.
 
 - Scrolling can be improved
 
-- Move trash recovery to a new screen
+~~- Move trash recovery to a new screen~~
+
+- Eliminate flash when selecting items
 
 - Use File class async methods
 
