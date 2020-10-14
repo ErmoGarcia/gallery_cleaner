@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 class ImagePreview extends StatelessWidget {
 
   final Uint8List image;
+  final int index;
 
-  ImagePreview({ Key key, @required this.image }) : super(key: key);
+  ImagePreview({ Key key, @required this.image, this.index }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +22,14 @@ class ImagePreview extends StatelessWidget {
         onDismissed: (direction) {
           Navigator.pop(context);
         },
-        child: Image.memory(
-          image,
-          fit: BoxFit.contain,
-          height: double.infinity,
-          width: double.infinity,
+        child: Hero(
+          tag: 'media_$index',
+          child: Image.memory(
+            image,
+            fit: BoxFit.contain,
+            height: double.infinity,
+            width: double.infinity,
+          ),
         )
       ),
     );

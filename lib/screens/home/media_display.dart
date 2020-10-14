@@ -107,7 +107,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
       itemBuilder: (context, index) {
 
         bool active = index == currentPage;
-        return _buildMediaPage(_mediaList[index], active);
+        return _buildMediaPage(_mediaList[index], active, index);
       },
       scrollDirection: Axis.horizontal,
     );
@@ -115,11 +115,10 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
 
 
-  _buildMediaPage(File media, bool active) {
+  _buildMediaPage(File media, bool active, int index) {
     final double blur = active ? 30 : 0;
     final double offset = active ? 20 : 0;
-    final double top = active ? 150 : 200;
-    final double bottom = active ? 150 : 200;
+    final double margin = active ? 10 : 20;
 
 
     // var image = Gallery().isImage(media.path)
@@ -129,45 +128,55 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
     //       child: VideoThumbnail()
     //     );
 
+    var image = Image.file(
+      media,
+      width: 300,
+    );
+
     // Media thumbnail
     return Dismissible(
         resizeDuration: null,
         background: DeleteAnimation(),
         secondaryBackground: CloudAnimation(),
 
-        // On tap: load preview
-        child: GestureDetector(
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-            margin: EdgeInsets.only(top: top, bottom: bottom, right: 30),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: FileImage(media)
+        child: Column(
+          children: <Widget>[
+            Expanded(child: Container(),),
+            AnimatedContainer(
+              margin: EdgeInsets.symmetric(horizontal: 30),
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+              decoration: BoxDecoration(
+                boxShadow: [BoxShadow(
+                    color: Colors.black87,
+                    blurRadius: blur,
+                    offset: Offset(offset, offset)
+                )],
               ),
-              boxShadow: [BoxShadow(
-                  color: Colors.black87,
-                  blurRadius: blur,
-                  offset: Offset(offset, offset)
-              )],
-            ),
-          ),
-          onTap: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return Gallery().isImage(media.path) ? ImagePreview(
-                      image: media.readAsBytesSync()
-                  ) : Provider.value(
-                      value: media, child: VideoPreview()
+              child: GestureDetector(
+                child: Hero(
+                  tag: 'media_$index',
+                    child: image
+                ),
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return Gallery().isImage(media.path) ? ImagePreview(
+                            image: media.readAsBytesSync(),
+                            index: index
+                        ) : Provider.value(
+                            value: media, child: VideoPreview()
+                        );
+                      },
+                    ),
                   );
                 },
               ),
-            );
-          },
+            ),
+            Expanded(child: Container(),)
+          ],
         ),
         key: ValueKey(media),
         direction: DismissDirection.vertical,
