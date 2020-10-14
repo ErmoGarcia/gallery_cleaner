@@ -55,7 +55,7 @@ class TrashGallery extends ChangeNotifier {
 
   Future<void> recoverSelected(Gallery gallery) async {
     for (File file in this.selectedList) {
-      gallery.add(file);
+      gallery.sortInsert(file);
       final result = await db.select().path.equals(file.path).delete();
       print(result.toString());
     }

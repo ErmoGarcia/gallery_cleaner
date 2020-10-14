@@ -15,20 +15,39 @@ import 'package:provider/provider.dart';
 
 class CleanerWidget extends StatefulWidget{
 
+  final Key key;
+  final File media;
+  final VoidCallback sendToTrash;
+
+  CleanerWidget({
+    this.key,
+    @required this.media,
+    this.sendToTrash
+  }) : super(key: key);
+
   @override
   _CleanerWidgetState createState() => _CleanerWidgetState();
 }
 
 /// This is the private State class that goes with CleanerWidget.
 class _CleanerWidgetState extends State<CleanerWidget> {
+
+  File media;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      media = widget.media;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    var _gallery = context.watch<Gallery>();
-    
     var media = Provider.of<File>(context);
 
-    var image = _gallery.isImage(media.path) ? Image.memory(
+    var image = Gallery().isImage(media.path) ? Image.memory(
         media.readAsBytesSync(),
         width: 300,
       ) : Provider.value(
@@ -50,7 +69,7 @@ class _CleanerWidgetState extends State<CleanerWidget> {
             context,
             MaterialPageRoute(
               builder: (context) {
-                return _gallery.isImage(media.path) ? ImagePreview(
+                return Gallery().isImage(media.path) ? ImagePreview(
                     image: media.readAsBytesSync()
                 ) : Provider.value(
                     value: media, child: VideoPreview()
@@ -89,7 +108,7 @@ class _CleanerWidgetState extends State<CleanerWidget> {
         }
 
         // Remove from swiper
-        _gallery.remove(media);
+        // _gallery.remove(media);
       },
     );
   }

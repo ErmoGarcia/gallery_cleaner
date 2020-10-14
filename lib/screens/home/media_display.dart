@@ -1,7 +1,15 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mediagallerycleaner/model/model.dart';
+import 'package:mediagallerycleaner/screens/home/animations/cloud_animation.dart';
+import 'package:mediagallerycleaner/screens/home/animations/delete_animation.dart';
+import 'package:mediagallerycleaner/screens/home/thumbnails/video_thumbnail.dart';
+import 'package:mediagallerycleaner/screens/media_preview/image_preview.dart';
+import 'package:mediagallerycleaner/screens/media_preview/video_preview.dart';
 
 // Permission handle for iOS and Android
 import 'package:permission_handler/permission_handler.dart';
@@ -20,27 +28,12 @@ class MediaDisplayWidget extends StatefulWidget {
 // Shows the media carousel from newest to oldest
 class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
-  final _controller = PageController(viewportFraction: 0.8);
+  final ctrl = PageController(viewportFraction: 0.8);
 
-  void nextPage() async {
-    await _controller.nextPage(
-      duration: Duration(milliseconds: 200),
-      curve: Curves.easeOut,
-    );
-  }
-
-  void prevPage() async {
-    await _controller.previousPage(
-      duration: Duration(milliseconds: 200),
-      curve: Curves.easeOut,
-    );
-  }
-
-  // final _gallery = Gallery();
   Gallery _gallery;
-
-  List<File> _mediaList;
+  List<File> _mediaList = [];
   bool _loading = true;
+  int currentPage = 0;
 
   // Gets the media from the gallery (except deleted)
   _loadImages(Gallery gallery) async {
@@ -62,7 +55,29 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
     super.initState();
 
     final Gallery gallery = Provider.of<Gallery>(context, listen: false);
+    gallery.addListener(() {
+      setState(() {
+        _mediaList = gallery.media;
+      });
+    });
+
     _loadImages(gallery);
+
+    ctrl.addListener(() {
+      int next = ctrl.page.round();
+
+      if(currentPage != next) {
+        ctrl.animateToPage(
+            next,
+            duration: Duration(milliseconds: 150),
+            curve: Curves.easeOut
+        );
+
+        setState(() {
+          currentPage = next;
+        });
+      }
+    });
   }
 
   @override
@@ -86,39 +101,105 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
       );
     }
 
-    return ChangeNotifierProvider.value(
-      value: _gallery,
-      child: PageView.builder(
-        controller: _controller,
-        itemCount: _mediaList.length,
-        itemBuilder: (context, index) {
-          context.watch<Gallery>();
+    return PageView.builder(
+      controller: ctrl,
+      itemCount: _mediaList.length,
+      itemBuilder: (context, index) {
 
-          return GestureDetector(
-            // onPanUpdate: (details) {
-            //   if (details.delta.dx < 0) {
-            //     nextPage();
-            //   }
-            //   if (details.delta.dx > 0) {
-            //     prevPage();
-            //   }
-            // },
-            child: Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+        bool active = index == currentPage;
+        return _buildMediaPage(_mediaList[index], active);
+      },
+      scrollDirection: Axis.horizontal,
+    );
+  }
 
-                  // Loads the media thumbnails when it gets them
-                  child: Provider.value(
-                    value: _mediaList[index],
-                    child: CleanerWidget(),
-                  )
-                ),
+
+
+  _buildMediaPage(File media, bool active) {
+    final double blur = active ? 30 : 0;
+    final double offset = active ? 20 : 0;
+    final double top = active ? 150 : 200;
+    final double bottom = active ? 150 : 200;
+
+
+    // var image = Gallery().isImage(media.path)
+    //     ? Image.file(media)
+    //     : Provider.value(
+    //       value: media,
+    //       child: VideoThumbnail()
+    //     );
+
+    // Media thumbnail
+    return Dismissible(
+        resizeDuration: null,
+        background: DeleteAnimation(),
+        secondaryBackground: CloudAnimation(),
+
+        // On tap: load preview
+        child: GestureDetector(
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            margin: EdgeInsets.only(top: top, bottom: bottom, right: 30),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: FileImage(media)
+              ),
+              boxShadow: [BoxShadow(
+                  color: Colors.black87,
+                  blurRadius: blur,
+                  offset: Offset(offset, offset)
+              )],
             ),
-          );
+          ),
+          onTap: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return Gallery().isImage(media.path) ? ImagePreview(
+                      image: media.readAsBytesSync()
+                  ) : Provider.value(
+                      value: media, child: VideoPreview()
+                  );
+                },
+              ),
+            );
+          },
+        ),
+        key: ValueKey(media),
+        direction: DismissDirection.vertical,
+
+        // On swipe vertical:
+        onDismissed: (direction) async {
+
+          // If swiped up: send to cloud
+//             if(direction == DismissDirection.up) {
+//               Deleted image = Deleted();
+//               image.img_id = _mediaList[index].id;
+//               image.date = _mediaList[index].createDateTime;
+//               image.cloud = true;
+//
+//               await image.save();
+//             }
+
+          // If swiped down: delete
+          if(direction == DismissDirection.down) {
+
+            Deleted dbInstance = Deleted();
+
+            dbInstance.path = media.path;
+            dbInstance.date = media.lastModifiedSync();
+            dbInstance.cloud = false;
+
+            await dbInstance.save();
+          }
+
+          // Remove from swiper
+          _gallery.remove(media);
         },
-        // physics: NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-      ),
     );
   }
 }

@@ -36,9 +36,9 @@ class Gallery extends ChangeNotifier {
         sortInsert(file);
       }
 
-      else if(isVideo(path)) {
-        sortInsert(file);
-      }
+      // else if(isVideo(path)) {
+      //   sortInsert(file);
+      // }
 
     });
 
@@ -64,6 +64,7 @@ class Gallery extends ChangeNotifier {
       } else {
         max = mid;
       }
+      notifyListeners();
     }
 
     this.media.insert(mid, f1);
@@ -78,10 +79,10 @@ class Gallery extends ChangeNotifier {
     return path.endsWith('.mp4');
   }
 
-  void add(File media) {
-    sortInsert(media);
-    notifyListeners();
-  }
+  // void add(File media) {
+  //   sortInsert(media);
+  //   notifyListeners();
+  // }
 
   void remove(File media) {
     try {
