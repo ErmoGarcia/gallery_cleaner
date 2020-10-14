@@ -95,14 +95,14 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
           context.watch<Gallery>();
 
           return GestureDetector(
-            onPanUpdate: (details) {
-              if (details.delta.dx < 0) {
-                nextPage();
-              }
-              if (details.delta.dx > 0) {
-                prevPage();
-              }
-            },
+            // onPanUpdate: (details) {
+            //   if (details.delta.dx < 0) {
+            //     nextPage();
+            //   }
+            //   if (details.delta.dx > 0) {
+            //     prevPage();
+            //   }
+            // },
             child: Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -116,7 +116,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
             ),
           );
         },
-        physics: NeverScrollableScrollPhysics(),
+        // physics: NeverScrollableScrollPhysics(),
         scrollDirection: Axis.horizontal,
       ),
     );

@@ -12,14 +12,16 @@ class TrashGallery extends ChangeNotifier {
   List<File> mediaList = [];
   List<File> selectedList = [];
 
+  ValueNotifier<int> selectedCount = ValueNotifier(0);
+
   void switchSelect(File media, bool isSelected) {
     if(isSelected) {
       this.selectedList.remove(media);
-      if(this.selectedList.isEmpty) {notifyListeners();}
+      --this.selectedCount.value;
     } else {
       this.selectedList.add(media);
+      ++this.selectedCount.value;
     }
-    // notifyListeners();
   }
 
   Future<void> loadMedia() async {
@@ -60,6 +62,7 @@ class TrashGallery extends ChangeNotifier {
 
     this.mediaList.removeWhere((file) => this.selectedList.contains(file));
     this.selectedList.clear();
+    this.selectedCount.value = 0;
     notifyListeners();
   }
 

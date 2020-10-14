@@ -101,7 +101,16 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
               ),
             ),
           )
-              : Container(),
+              : (widget.selectMode ? Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.remove_circle_outline,
+                color: Colors.grey[50],
+              ),
+            ),
+          ) : Container())
         ]
       ),
     );

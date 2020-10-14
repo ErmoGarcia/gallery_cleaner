@@ -46,24 +46,28 @@ class _RecoveryState extends State<Recovery> {
 
       // Bar containing the title and "empty" button
       appBar: AppBar(
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                _trash.selectedList.clear();
-                Navigator.of(context).pop();
-              },
-            );
+        leading: IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            _trash.selectedList.clear();
+            _trash.selectedCount.value = 0;
+            Navigator.of(context).pop();
           },
         ),
         centerTitle: true,
-        title: Text(
-          '${_trash.selectedList.length} selected',
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontSize: 20.0),
+        title: ChangeNotifierProvider.value(
+          value: _trash.selectedCount,
+          child: Consumer<ValueNotifier<int>>(
+            builder: (context, count, child) {
+              return Text(
+                '${count.value} items',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              );
+            }
+          ),
         ),
         backgroundColor: Colors.purpleAccent,
         actions: <Widget>[

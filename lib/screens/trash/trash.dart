@@ -151,6 +151,7 @@ class _TrashState extends State<Trash> {
                     onLongPress: () {
 
                       trash.selectedList.add(trash.mediaList[index]);
+                      ++trash.selectedCount.value;
 
                       Navigator.push(
                           context,

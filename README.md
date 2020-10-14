@@ -31,7 +31,7 @@ photos and videos with its simple and intuitive UI.
 
 ~~- Move trash recovery to a new screen~~
 
-- Eliminate flash when selecting items
+~~- Eliminate flash when selecting items~~
 
 - Use File class async methods
 
