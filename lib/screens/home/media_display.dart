@@ -106,8 +106,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
       itemBuilder: (context, index) {
 
         bool active = index == currentPage;
-        String tag = 'media_$index';
-        return _buildMediaPage(_mediaList[index], active, tag);
+        return _buildMediaPage(_mediaList[index], active);
       },
       scrollDirection: Axis.horizontal,
     );
@@ -115,7 +114,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
 
 
-  _buildMediaPage(File media, bool active, String tag) {
+  _buildMediaPage(File media, bool active) {
     final double offset = active ? 20 : 0;
     final double margin = active ? 10 : 30;
 
@@ -128,9 +127,10 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
     // Media thumbnail
     return Dismissible(
-        resizeDuration: null,
-        background: DeleteAnimation(),
-        secondaryBackground: CloudAnimation(),
+        movementDuration: Duration(milliseconds: 0),
+        resizeDuration: Duration(milliseconds: 100),
+        // background: DeleteAnimation(),
+        // secondaryBackground: CloudAnimation(),
 
         child: Center(
           child: Card(
@@ -143,7 +143,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
             elevation: offset,
             child: GestureDetector(
               child: Hero(
-                tag: tag,
+                tag: media.path,
                   child: image
               ),
               onTap: (){
@@ -152,10 +152,9 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
                   MaterialPageRoute(
                     builder: (context) {
                       return Gallery().isImage(media.path) ? ImagePreview(
-                          image: media.readAsBytesSync(),
-                          tag: tag
+                          media: media
                       ) : Provider.value(
-                          value: media, child: VideoPreview(tag: tag,)
+                          value: media, child: VideoPreview()
                       );
                     },
                   ),
@@ -164,7 +163,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
             ),
           ),
         ),
-        key: ValueKey(tag),
+        key: ValueKey(media.path),
         direction: DismissDirection.vertical,
 
         // On swipe vertical:

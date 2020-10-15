@@ -1,13 +1,12 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 class ImagePreview extends StatelessWidget {
 
-  final Uint8List image;
-  final String tag;
+  final File media;
 
-  ImagePreview({ Key key, @required this.image, this.tag }) : super(key: key);
+  ImagePreview({ Key key, @required this.media }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,17 +14,20 @@ class ImagePreview extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Dismissible(
-        movementDuration: Duration(milliseconds: 200),
+        movementDuration: Duration(milliseconds: 0),
         resizeDuration: Duration(milliseconds: 100),
-        key: ValueKey(tag),
+        dismissThresholds: {
+          DismissDirection.up: 0.2, DismissDirection.down: 0.2
+        },
+        key: ValueKey(media.path),
         direction: DismissDirection.vertical,
         onDismissed: (direction) {
           Navigator.pop(context);
         },
         child: Hero(
-          tag: tag,
-          child: Image.memory(
-            image,
+          tag: media.path,
+          child: Image.file(
+            media,
             fit: BoxFit.contain,
             height: double.infinity,
             width: double.infinity,

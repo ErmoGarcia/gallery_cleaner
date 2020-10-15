@@ -75,7 +75,7 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
             MaterialPageRoute(
               builder: (context) {
                 return Gallery().isImage(widget.media.path) ? ImagePreview(
-                    image: widget.media.readAsBytesSync()
+                    media: widget.media
                 ) : Provider.value(
                     value: widget.media, child: VideoPreview()
                 );
@@ -88,7 +88,7 @@ class _TrashGridWidgetState extends State<TrashGridWidget> {
         children: <Widget>[
           Padding(
             padding: isSelected ? EdgeInsets.all(15) : EdgeInsets.all(0),
-            child: image,
+            child: Hero(tag: widget.media.path, child: image),
           ),
           isSelected
               ? Align(

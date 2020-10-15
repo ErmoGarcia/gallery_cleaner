@@ -8,11 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPreview extends StatefulWidget{
-
-  final String tag;
-
-  VideoPreview({Key key, this.tag}) : super(key: key);
-
   @override
   _VideoPreviewState createState() => _VideoPreviewState();
 }
@@ -64,29 +59,32 @@ class _VideoPreviewState extends State<VideoPreview> {
         children: <Widget>[
           Dismissible(
             movementDuration: Duration(milliseconds: 0),
-            dismissThresholds: {DismissDirection.vertical: 0.2},
-            key: ValueKey(_media),
+            resizeDuration: Duration(milliseconds: 100),
+            dismissThresholds: {
+              DismissDirection.up: 0.2, DismissDirection.down: 0.2
+            },
+            key: ValueKey(_media.path),
             direction: DismissDirection.vertical,
             onDismissed: (direction) {
               Navigator.pop(context);
             },
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  if(_controller.value.isPlaying) {
-                    _controller.pause();
-                  } else {
-                    _controller.play();
-                  }
-                });
-              },
-              child: Center(
-                child: AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: Stack(
-                    children: <Widget>[
-                      Hero(tag: widget.tag, child: VideoPlayer(_controller)),
-                      Center(
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: Stack(
+                  children: <Widget>[
+                    Hero(tag: _media.path, child: VideoPlayer(_controller)),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            if(_controller.value.isPlaying) {
+                              _controller.pause();
+                            } else {
+                              _controller.play();
+                            }
+                          });
+                        },
                         child: Icon(
                           _controller.value.isPlaying
                               ? Icons.pause_circle_outline
@@ -95,8 +93,8 @@ class _VideoPreviewState extends State<VideoPreview> {
                           size: 100.0,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
