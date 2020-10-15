@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 class ImagePreview extends StatelessWidget {
 
   final Uint8List image;
-  final int index;
+  final String tag;
 
-  ImagePreview({ Key key, @required this.image, this.index }) : super(key: key);
+  ImagePreview({ Key key, @required this.image, this.tag }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class ImagePreview extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Dismissible(
-        movementDuration: Duration(milliseconds: 0),
+        movementDuration: null,
         dismissThresholds: {DismissDirection.vertical: 0.2},
         key: ValueKey(image),
         direction: DismissDirection.vertical,
@@ -23,7 +23,7 @@ class ImagePreview extends StatelessWidget {
           Navigator.pop(context);
         },
         child: Hero(
-          tag: 'media_$index',
+          tag: tag,
           child: Image.memory(
             image,
             fit: BoxFit.contain,

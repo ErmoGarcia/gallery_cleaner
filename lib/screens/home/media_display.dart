@@ -107,7 +107,8 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
       itemBuilder: (context, index) {
 
         bool active = index == currentPage;
-        return _buildMediaPage(_mediaList[index], active, index);
+        String tag = 'media_$index';
+        return _buildMediaPage(_mediaList[index], active, tag);
       },
       scrollDirection: Axis.horizontal,
     );
@@ -115,23 +116,22 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
 
 
 
-  _buildMediaPage(File media, bool active, int index) {
-    final double blur = active ? 30 : 0;
+  _buildMediaPage(File media, bool active, String tag) {
     final double offset = active ? 20 : 0;
-    final double margin = active ? 10 : 20;
+    final double margin = active ? 10 : 30;
 
 
-    // var image = Gallery().isImage(media.path)
-    //     ? Image.file(media)
-    //     : Provider.value(
-    //       value: media,
-    //       child: VideoThumbnail()
-    //     );
+    var image = Gallery().isImage(media.path)
+        ? Image.file(media)
+        : Provider.value(
+          value: media,
+          child: VideoThumbnail()
+        );
 
-    var image = Image.file(
-      media,
-      width: 300,
-    );
+    // var image = Image.file(
+    //   media,
+    //   // width: 300,
+    // );
 
     // Media thumbnail
     return Dismissible(
@@ -139,44 +139,37 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
         background: DeleteAnimation(),
         secondaryBackground: CloudAnimation(),
 
-        child: Column(
-          children: <Widget>[
-            Expanded(child: Container(),),
-            AnimatedContainer(
-              margin: EdgeInsets.symmetric(horizontal: 30),
-              duration: Duration(milliseconds: 200),
-              curve: Curves.easeOut,
-              decoration: BoxDecoration(
-                boxShadow: [BoxShadow(
-                    color: Colors.black87,
-                    blurRadius: blur,
-                    offset: Offset(offset, offset)
-                )],
-              ),
-              child: GestureDetector(
-                child: Hero(
-                  tag: 'media_$index',
-                    child: image
-                ),
-                onTap: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return Gallery().isImage(media.path) ? ImagePreview(
-                            image: media.readAsBytesSync(),
-                            index: index
-                        ) : Provider.value(
-                            value: media, child: VideoPreview()
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
+        child: Center(
+          child: Card(
+            margin: EdgeInsets.symmetric(horizontal: margin, vertical: 1),
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)
             ),
-            Expanded(child: Container(),)
-          ],
+            shadowColor: Colors.grey[500],
+            elevation: offset,
+            child: GestureDetector(
+              child: Hero(
+                tag: tag,
+                  child: image
+              ),
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return Gallery().isImage(media.path) ? ImagePreview(
+                          image: media.readAsBytesSync(),
+                          tag: tag
+                      ) : Provider.value(
+                          value: media, child: VideoPreview()
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
         ),
         key: ValueKey(media),
         direction: DismissDirection.vertical,
