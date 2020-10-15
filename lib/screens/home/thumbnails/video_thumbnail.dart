@@ -51,11 +51,9 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
       return Loading();
     }
 
-    return  Center(
-      child: AspectRatio(
-        aspectRatio: _controller.value.aspectRatio,
-        child: VideoPlayer(_controller),
-      ),
+    return  AspectRatio(
+      aspectRatio: _controller.value.aspectRatio,
+      child: VideoPlayer(_controller),
     );
   }
 }

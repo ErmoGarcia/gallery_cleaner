@@ -36,9 +36,9 @@ class Gallery extends ChangeNotifier {
         sortInsert(file);
       }
 
-      // else if(isVideo(path)) {
-      //   sortInsert(file);
-      // }
+      else if(isVideo(path)) {
+        sortInsert(file);
+      }
 
     });
 

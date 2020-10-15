@@ -9,6 +9,10 @@ import 'package:video_player/video_player.dart';
 
 class VideoPreview extends StatefulWidget{
 
+  final String tag;
+
+  VideoPreview({Key key, this.tag}) : super(key: key);
+
   @override
   _VideoPreviewState createState() => _VideoPreviewState();
 }
@@ -81,7 +85,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                   aspectRatio: _controller.value.aspectRatio,
                   child: Stack(
                     children: <Widget>[
-                      VideoPlayer(_controller),
+                      Hero(tag: widget.tag, child: VideoPlayer(_controller)),
                       Center(
                         child: Icon(
                           _controller.value.isPlaying

@@ -15,9 +15,9 @@ class ImagePreview extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Dismissible(
-        movementDuration: null,
-        dismissThresholds: {DismissDirection.vertical: 0.2},
-        key: ValueKey(image),
+        movementDuration: Duration(milliseconds: 200),
+        resizeDuration: Duration(milliseconds: 100),
+        key: ValueKey(tag),
         direction: DismissDirection.vertical,
         onDismissed: (direction) {
           Navigator.pop(context);

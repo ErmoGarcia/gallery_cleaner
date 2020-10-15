@@ -14,7 +14,6 @@ import 'package:mediagallerycleaner/screens/media_preview/video_preview.dart';
 // Permission handle for iOS and Android
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:mediagallerycleaner/screens/home/cleaner.dart';
 import 'package:mediagallerycleaner/services/filters.dart';
 import 'package:mediagallerycleaner/services/gallery.dart';
 import 'package:mediagallerycleaner/shared/loading.dart';
@@ -120,18 +119,12 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
     final double offset = active ? 20 : 0;
     final double margin = active ? 10 : 30;
 
-
     var image = Gallery().isImage(media.path)
         ? Image.file(media)
         : Provider.value(
           value: media,
           child: VideoThumbnail()
         );
-
-    // var image = Image.file(
-    //   media,
-    //   // width: 300,
-    // );
 
     // Media thumbnail
     return Dismissible(
@@ -162,7 +155,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
                           image: media.readAsBytesSync(),
                           tag: tag
                       ) : Provider.value(
-                          value: media, child: VideoPreview()
+                          value: media, child: VideoPreview(tag: tag,)
                       );
                     },
                   ),
@@ -171,7 +164,7 @@ class _MediaDisplayWidgetState extends State<MediaDisplayWidget> {
             ),
           ),
         ),
-        key: ValueKey(media),
+        key: ValueKey(tag),
         direction: DismissDirection.vertical,
 
         // On swipe vertical:
